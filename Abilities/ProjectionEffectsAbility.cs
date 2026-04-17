@@ -7,7 +7,7 @@ using UnityEngine.Rendering.Universal;
 
 namespace ProjectionSorcery.Abilities;
 
-public class ProjectionPlottingEffectsAbility : Ability
+public class ProjectionEffectsAbility : Ability
 {
     /// <summary> The Post Process Volume effects are applied to. </summary>
     public Volume PostProcessVolume { get; set; }
@@ -31,7 +31,7 @@ public class ProjectionPlottingEffectsAbility : Ability
     public static Color PlottingModeColor => new Color(PlottingColorR, PlottingColorG, PlottingColorB);
 
     /// <inheritdoc/>
-    public ProjectionPlottingEffectsAbility(AbilitySpell spell) : base(spell) { }
+    public ProjectionEffectsAbility(AbilitySpell spell) : base(spell) { }
 
     private Coroutine? plotTintCoroutine;
     private Coroutine? plotTintUndoCoroutine;
