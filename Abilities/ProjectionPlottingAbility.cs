@@ -97,8 +97,8 @@ public class ProjectionPlottingAbility : Ability
         {
             yield return new WaitForSeconds(PlottingInterval);
 
-            PlottedFrame.Hand lhand = new PlottedFrame.Hand(Spell.spellCaster.ragdollHand.creature.handLeft.transform.position, Spell.spellCaster.ragdollHand.creature.handLeft.transform.rotation);
-            PlottedFrame.Hand rhand = new PlottedFrame.Hand(Spell.spellCaster.ragdollHand.creature.handRight.transform.position, Spell.spellCaster.ragdollHand.creature.handRight.transform.rotation);
+            PlottedFrame.Hand lhand = new PlottedFrame.Hand(Spell.spellCaster.ragdollHand.creature.handLeft.transform.position, Spell.spellCaster.ragdollHand.creature.handLeft.transform.rotation, Spell.spellCaster.ragdollHand.creature.handLeft.physicBody.velocity);
+            PlottedFrame.Hand rhand = new PlottedFrame.Hand(Spell.spellCaster.ragdollHand.creature.handRight.transform.position, Spell.spellCaster.ragdollHand.creature.handRight.transform.rotation, Spell.spellCaster.ragdollHand.creature.handRight.physicBody.velocity);
 
             PlottedFrame frame = new PlottedFrame(Spell.spellCaster.ragdollHand.creature.transform.position, Spell.spellCaster.ragdollHand.creature.transform.rotation, lhand, rhand);
             PlottedFrames.AddLast(frame);
@@ -115,14 +115,16 @@ public class PlottedFrame
 {
     public struct Hand
     {
-        public Hand(Vector3 position, Quaternion rotation)
+        public Hand(Vector3 position, Quaternion rotation, Vector3 velocity = default)
         {
             Position = position;
             Rotation = rotation;
+            Velocity = velocity;
         }
 
         public Vector3 Position { get; set; }
         public Quaternion Rotation { get; set; }
+        public Vector3 Velocity { get; set; }
     }
 
     /// <summary> Initializes a new instance of the <see cref="PlottedFrame"/> class. </summary>
