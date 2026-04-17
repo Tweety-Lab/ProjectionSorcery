@@ -15,6 +15,11 @@ public class ProjectionPlottingLogicAbility : Ability
     [ModOptionFloatValues(0.1f, 1f, 0.1f)]
     public static float PlottingInterval = 0.1f;
 
+    [ModOption]
+    [ModOptionCategory("Projection Sorcery", 1)]
+    [ModOptionIntValues(4, 200, 1)]
+    public static int FramesPerSecond = 24;
+
     /// <summary> All currently plotted frames. </summary>
     public LinkedList<PlottedFrame> PlottedFrames { get; } = new LinkedList<PlottedFrame>(); // Linked List is slightly more perfomant 
 
@@ -59,14 +64,14 @@ public class ProjectionPlottingLogicAbility : Ability
                 Spell.spellCaster.ragdollHand.creature.Teleport(frame.RootPosition, Quaternion.identity);
 
             PlottedFrames.Remove(frame);
-            yield return new WaitForSeconds(PlottingInterval);
+            yield return new WaitForSeconds(1f / FramesPerSecond);
         }
     }
 
     /// <summary> Called once per frame plot. </summary>
     public IEnumerator PlottingTick()
     {
-        while (true)
+        while (PlottedFrames.Count < FramesPerSecond)
         {
             yield return new WaitForSeconds(PlottingInterval);
             PlottedFrames.AddLast(new PlottedFrame { RootPosition = Spell.spellCaster.ragdollHand.creature.transform.position });
