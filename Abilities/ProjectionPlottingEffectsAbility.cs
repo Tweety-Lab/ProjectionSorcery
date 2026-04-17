@@ -53,15 +53,8 @@ public class ProjectionPlottingEffectsAbility : Ability
         PostProcessVolume = GameObject.FindAnyObjectByType<Volume>();
     }
 
-    public void OnEnterPlotting()
-    {
-        TintScreen();
-    }
-
-    public void OnExitPlotting()
-    {
-        UnTintScreen();
-    }
+    public void OnEnterPlotting() => TintScreen();
+    public void OnExitPlotting() => UnTintScreen();
 
     /// <summary> Tints the screen to <see cref="PlottingModeColor"/>. </summary>
     public void TintScreen()

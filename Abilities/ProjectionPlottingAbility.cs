@@ -79,9 +79,9 @@ public class ProjectionPlottingAbility : Ability
         foreach (PlottedFrame frame in frames)
         {
             if (Spell.spellCaster.ragdollHand.creature.isPlayer)
-                Spell.spellCaster.ragdollHand.creature.player.Teleport(frame.RootPosition, Quaternion.identity);
+                Spell.spellCaster.ragdollHand.creature.player.Teleport(frame.RootPosition, frame.RootRotation);
             else
-                Spell.spellCaster.ragdollHand.creature.Teleport(frame.RootPosition, Quaternion.identity);
+                Spell.spellCaster.ragdollHand.creature.Teleport(frame.RootPosition, frame.RootRotation);
 
             OnPlaybackTick.Invoke(frame);
 
@@ -97,7 +97,7 @@ public class ProjectionPlottingAbility : Ability
         {
             yield return new WaitForSeconds(PlottingInterval);
 
-            PlottedFrame frame = new PlottedFrame { RootPosition = Spell.spellCaster.ragdollHand.creature.transform.position };
+            PlottedFrame frame = new PlottedFrame(Spell.spellCaster.ragdollHand.creature.transform.position, Spell.spellCaster.ragdollHand.creature.transform.rotation);
             PlottedFrames.AddLast(frame);
 
             OnPlottingTick.Invoke(frame);
@@ -110,5 +110,13 @@ public class ProjectionPlottingAbility : Ability
 /// </summary>
 public class PlottedFrame
 {
+    /// <summary> Initializes a new instance of the <see cref="PlottedFrame"/> class. </summary>
+    public PlottedFrame(Vector3 rootPos, Quaternion rootRot)
+    {
+        RootPosition = rootPos;
+        RootRotation = rootRot;
+    }
+
     public Vector3 RootPosition { get; set; }
+    public Quaternion RootRotation { get; set; }
 }
