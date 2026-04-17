@@ -12,7 +12,7 @@ public static class ModInfo
     public const string Author = "Allieum256";
 
     [ExportedString("manifest.json")]
-    public const string QUICKHACK_MANIFEST =
+    public const string PROJECTION_MANIFEST =
 $@"{{
     ""Name"": ""{Name}"",
     ""Description"": ""{Description}"",
