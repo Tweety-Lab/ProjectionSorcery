@@ -29,6 +29,12 @@ public class ProjectionPlottingFreezeAbility : Ability
             CreatureFreezeManager freezeManager = creature.GetOrAddComponent<CreatureFreezeManager>();
             freezeManager.Freeze();
         }
+
+        foreach (Item item in Item.allActive)
+        {
+            ItemFreezeManager freezeManager = item.GetOrAddComponent<ItemFreezeManager>();
+            freezeManager.Freeze();
+        }
     }
 
     public void OnExitPlotting()
@@ -36,6 +42,14 @@ public class ProjectionPlottingFreezeAbility : Ability
         foreach (Creature creature in Creature.allActive)
         {
             CreatureFreezeManager freezeManager = creature.GetOrAddComponent<CreatureFreezeManager>();
+            freezeManager.UnFreeze();
+
+            GameObject.Destroy(freezeManager);
+        }
+
+        foreach (Item item in Item.allActive)
+        {
+            ItemFreezeManager freezeManager = item.GetOrAddComponent<ItemFreezeManager>();
             freezeManager.UnFreeze();
 
             GameObject.Destroy(freezeManager);

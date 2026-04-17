@@ -1,4 +1,5 @@
-﻿using ThunderRoad;
+﻿using System.Linq;
+using ThunderRoad;
 
 namespace ProjectionSorcery.Components;
 
@@ -10,9 +11,7 @@ public class CreatureFreezeManager : FreezeManager<Creature>
         if (Target.isPlayer)
             return;
 
-        Target.brain.enabled = false;
-        Target.ragdoll.SetState(Ragdoll.State.Frozen);
-        Target.RootPhysicBody.isEnabled = false;
+        ToggleFreezeCreature(Target, true);
     }
 
     /// <inheritdoc/>
@@ -21,8 +20,18 @@ public class CreatureFreezeManager : FreezeManager<Creature>
         if (Target.isPlayer)
             return;
 
-        Target.brain.enabled = true;
-        Target.ragdoll.SetState(Ragdoll.State.NoPhysic);
-        Target.RootPhysicBody.isEnabled = true;
+        ToggleFreezeCreature(Target, false);
+    }
+
+    public void ToggleFreezeCreature(Creature creature, bool shouldFreeze)
+    {
+        creature.brain.enabled = !shouldFreeze;
+
+        if (shouldFreeze)
+            creature.ragdoll.SetState(Ragdoll.State.Frozen);
+        else
+            creature.ragdoll.SetState(Ragdoll.State.NoPhysic);
+
+        creature.RootPhysicBody.isEnabled = !shouldFreeze;
     }
 }
