@@ -1,5 +1,6 @@
 ﻿using AliLib.Core;
 using AliLib.Core.Abilities;
+using ProjectionSorcery.Abilities;
 using System.Collections.Generic;
 
 namespace ProjectionSorcery;
@@ -88,7 +89,7 @@ public class ProjectionSorcerySpell : AbilitySpell
     {
         return new List<Ability>
         {
-
+            new ProjectionPlottingLogicAbility(this)
         };
     }
 }
