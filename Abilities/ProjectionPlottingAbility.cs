@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace ProjectionSorcery.Abilities;
 
-public class ProjectionPlottingLogicAbility : Ability
+public class ProjectionPlottingAbility : Ability
 {
     [ModOption]
     [ModOptionCategory("Projection Sorcery", 1)]
@@ -21,6 +21,12 @@ public class ProjectionPlottingLogicAbility : Ability
     [ModOptionIntValues(4, 200, 1)]
     public static int FramesPerSecond = 24;
 
+    /// <summary> Called when the casting creature has entered plotting mode. </summary>
+    public ModEvent OnEnterPlotting { get; } = new ModEvent();
+
+    /// <summary> Called when the casting creature has exited plotting mode. </summary>
+    public ModEvent OnExitPlotting { get; } = new ModEvent();
+
     /// <summary> Called when the casting creature has entered a plotted frame during playback. </summary>
     public ModEvent<PlottedFrame> OnPlaybackTick { get; } = new ModEvent<PlottedFrame>();
 
@@ -31,7 +37,7 @@ public class ProjectionPlottingLogicAbility : Ability
     public LinkedList<PlottedFrame> PlottedFrames { get; } = new LinkedList<PlottedFrame>(); // Linked List is slightly more perfomant 
 
     /// <inheritdoc/>
-    public ProjectionPlottingLogicAbility(AbilitySpell spell) : base(spell) { }
+    public ProjectionPlottingAbility(AbilitySpell spell) : base(spell) { }
 
     /// <inheritdoc/>
     public override void Init()
@@ -50,10 +56,14 @@ public class ProjectionPlottingLogicAbility : Ability
         {
             CoroutineRunner.Instance.StopCoroutine(plotting);
             StartPlayback();
+
+            OnExitPlotting.Invoke();
         }
 
         Spell.OnStopCast -= StopCast;
         Spell.OnStopCast += StopCast;
+
+        OnEnterPlotting.Invoke();
     }
 
     /// <summary> Starts sending the caster through all plotted frames. </summary>
