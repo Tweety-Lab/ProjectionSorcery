@@ -21,6 +21,7 @@ public class ItemFreezeManager : FreezeManager<Item>
         SavedAngularVelocity = Target.physicBody.angularVelocity;
 
         Target.physicBody.isEnabled = false;
+        Target.breakable?.canBreak = false;
 
         IsFrozen = true;
     }
@@ -33,6 +34,7 @@ public class ItemFreezeManager : FreezeManager<Item>
             Target.physicBody.isEnabled = true;
             Target.physicBody.velocity = SavedVelocity;
             Target.physicBody.angularVelocity = SavedAngularVelocity;
+            Target.breakable?.canBreak = true;
 
             IsFrozen = false;
         }
