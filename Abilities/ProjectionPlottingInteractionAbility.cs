@@ -19,6 +19,11 @@ public class ProjectionPlottingInteractionAbility : Ability
     [ModOptionCategory("Projection Sorcery", 1)]
     public static InteractionType InteractionMode = InteractionType.DuringPlayback;
 
+    [ModOption]
+    [ModOptionCategory("Projection Sorcery", 1)]
+    [ModOptionFloatValues(0.1f, 5f, 0.1f)]
+    public static float PlaybackDamageMultiplier = 1f;
+
     /// <inheritdoc/>
     public ProjectionPlottingInteractionAbility(AbilitySpell spell) : base(spell) { }
 
@@ -83,7 +88,7 @@ public class ProjectionPlottingInteractionAbility : Ability
                 target,
                 sourceCollider,
                 col,
-                velocity,
+                velocity * PlaybackDamageMultiplier,
                 sourcePoint,
                 targetPoint,
                 normal,
