@@ -37,7 +37,10 @@ public class ProjectionPlottingAbility : Ability
     public ModEvent<PlottedFrame> OnPlottingTick { get; set; } = new ModEvent<PlottedFrame>();
 
     /// <summary> All currently plotted frames. </summary>
-    public LinkedList<PlottedFrame> PlottedFrames { get; set; } = new LinkedList<PlottedFrame>(); // Linked List is slightly more perfomant 
+    public LinkedList<PlottedFrame> PlottedFrames { get; set; } = new LinkedList<PlottedFrame>(); // Linked List is slightly more perfomant
+
+    /// <summary> Whether the creature is currently in plotting mode. </summary>
+    public bool IsPlotting => PlottedFrames.Count > 0;
 
     /// <inheritdoc/>
     public ProjectionPlottingAbility(AbilitySpell spell) : base(spell) { }
@@ -52,18 +55,23 @@ public class ProjectionPlottingAbility : Ability
 
     public void OnStartCast()
     {
+        if (IsPlotting)
+            return;
+
         Coroutine plotting = CoroutineRunner.Instance.StartCoroutine(PlottingTick());
 
         // Since we only need to run this logic if StartCast has already fired we can subscribe here
         void StopCast()
         {
+            // Prevent enumeration issues
+            CoroutineRunner.Instance.PlayAfterYield(() => Spell.OnStopCast -= StopCast, new WaitForEndOfFrame());
+
             CoroutineRunner.Instance.StopCoroutine(plotting);
             StartPlayback();
 
             OnExitPlotting.Invoke();
         }
 
-        Spell.OnStopCast -= StopCast;
         Spell.OnStopCast += StopCast;
 
         OnEnterPlotting.Invoke();
