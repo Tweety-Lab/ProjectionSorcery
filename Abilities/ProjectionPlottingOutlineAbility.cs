@@ -10,12 +10,33 @@ namespace ProjectionSorcery.Abilities;
 
 public class ProjectionPlottingOutlineAbility : Ability
 {
+    [ModOption]
+    [ModOptionCategory("Outline", 2)]
+    public static bool Outlines = true;
+
+    [ModOption(interactionType = ModOption.InteractionType.Slider)]
+    [ModOptionCategory("Outline", 2)]
+    [ModOptionFloatValues(0f, 1f, 0.05f)]
+    public static float OutlineColorR = 1f;
+
+    [ModOption(interactionType = ModOption.InteractionType.Slider)]
+    [ModOptionCategory("Outline", 2)]
+    [ModOptionFloatValues(0f, 1f, 0.05f)]
+    public static float OutlineColorG = 1f;
+
+    [ModOption(interactionType = ModOption.InteractionType.Slider)]
+    [ModOptionCategory("Outline", 2)]
+    [ModOptionFloatValues(0f, 1f, 0.05f)]
+    public static float OutlineColorB = 1f;
+
+    /// <summary> The color to tint the screen when in Hack Mode. </summary>
+    public static Color OutlineColor => new Color(OutlineColorR, OutlineColorG, OutlineColorB);
+
     [Addressable("ProjectionSorcery.Outline")]
     public static Shader? OutlineShader { get; set; }
 
     /// <inheritdoc/>
     public ProjectionPlottingOutlineAbility(AbilitySpell spell) : base(spell) { }
-
 
     /// <inheritdoc/>
     public override void Init()
@@ -27,7 +48,7 @@ public class ProjectionPlottingOutlineAbility : Ability
 
     public void OnPlottingTick(PlottedFrame plottedFrame)
     {
-        if (OutlineShader == null)
+        if (OutlineShader == null || !Outlines)
             return;
 
         // IK Solves at the end of the frame
@@ -38,15 +59,16 @@ public class ProjectionPlottingOutlineAbility : Ability
     }
 
     /// <summary> Spawns a plotting outline for a creautre. </summary>
-    public GameObject? SpawnOutline(Creature creature)
+    public GameObject? SpawnOutline(Creature creature, Material? material = null)
     {
         if (OutlineShader == null)
             return null;
 
         GameObject outline = new GameObject("Outline");
-        Material material = new Material(OutlineShader); // This gets disposed by the SmartObject<Mesh>
 
-        material.color = Color.white * 2f;
+        material ??= new Material(OutlineShader); // This gets disposed by the SmartObject<Mesh>
+
+        material.color = OutlineColor * 2f;
         material.SetInt("_Power", 3);
 
         foreach(SkinnedMeshRenderer renderer in creature.GetComponentsInChildren<SkinnedMeshRenderer>())
@@ -65,7 +87,7 @@ public class ProjectionPlottingOutlineAbility : Ability
                     Object.Destroy(material);
                     Object.Destroy(outline);
 
-                }, new WaitForSeconds(0.1f));
+                }, new WaitUntil(() => Spell.GetAbility<ProjectionPlottingAbility>()?.IsPlotting == false));
             });
 
             renderer.BakeMesh(bakedMesh, true);
@@ -83,7 +105,7 @@ public class ProjectionPlottingOutlineAbility : Ability
             MeshRenderer mr = meshObject.AddComponent<MeshRenderer>();
             mr.receiveShadows = false;
             mr.shadowCastingMode = ShadowCastingMode.Off;
-            mr.materials = new Material[] { material };
+            mr.sharedMaterials = new Material[] { material };
         }
 
         return outline;
