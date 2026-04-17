@@ -11,21 +11,21 @@ namespace ProjectionSorcery.Abilities;
 public class ProjectionPlottingOutlineAbility : Ability
 {
     [ModOption]
-    [ModOptionCategory("Outline", 2)]
+    [ModOptionCategory("Outline", 1)]
     public static bool Outlines = true;
 
     [ModOption(interactionType = ModOption.InteractionType.Slider)]
-    [ModOptionCategory("Outline", 2)]
+    [ModOptionCategory("Outline", 1)]
     [ModOptionFloatValues(0f, 1f, 0.05f)]
     public static float OutlineColorR = 1f;
 
     [ModOption(interactionType = ModOption.InteractionType.Slider)]
-    [ModOptionCategory("Outline", 2)]
+    [ModOptionCategory("Outline", 1)]
     [ModOptionFloatValues(0f, 1f, 0.05f)]
     public static float OutlineColorG = 1f;
 
     [ModOption(interactionType = ModOption.InteractionType.Slider)]
-    [ModOptionCategory("Outline", 2)]
+    [ModOptionCategory("Outline", 1)]
     [ModOptionFloatValues(0f, 1f, 0.05f)]
     public static float OutlineColorB = 1f;
 

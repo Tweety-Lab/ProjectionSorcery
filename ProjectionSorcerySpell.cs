@@ -93,7 +93,8 @@ public class ProjectionSorcerySpell : AbilitySpell
             new ProjectionPlottingTintAbility(this),
             new ProjectionPlottingOutlineAbility(this),
             new ProjectionPlottingFreezeAbility(this),
-            new ProjectionPlottingInteractionAbility(this)
+            new ProjectionPlottingInteractionAbility(this),
+            new ProjectionSoundAbility(this)
         };
     }
 }

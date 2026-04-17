@@ -11,17 +11,17 @@ namespace ProjectionSorcery.Abilities;
 public class ProjectionPlottingTintAbility : Ability
 {
     [ModOption(interactionType = ModOption.InteractionType.Slider)]
-    [ModOptionCategory("Effects", 2)]
+    [ModOptionCategory("Effects", 1)]
     [ModOptionFloatValues(0f, 1f, 0.05f)]
     public static float PlottingColorR = 0.7f;
 
     [ModOption(interactionType = ModOption.InteractionType.Slider)]
-    [ModOptionCategory("Effects", 2)]
+    [ModOptionCategory("Effects", 1)]
     [ModOptionFloatValues(0f, 1f, 0.05f)]
     public static float PlottingColorG = 0.7f;
 
     [ModOption(interactionType = ModOption.InteractionType.Slider)]
-    [ModOptionCategory("Effects", 2)]
+    [ModOptionCategory("Effects", 1)]
     [ModOptionFloatValues(0f, 1f, 0.05f)]
     public static float PlottingColorB = 0.7f;
 
