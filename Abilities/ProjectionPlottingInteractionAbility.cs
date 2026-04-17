@@ -1,5 +1,4 @@
 ﻿using AliLib.Core.Abilities;
-using System.Linq;
 using ThunderRoad;
 using UnityEngine;
 
@@ -10,6 +9,16 @@ namespace ProjectionSorcery.Abilities;
 /// </summary>
 public class ProjectionPlottingInteractionAbility : Ability
 {
+    public enum InteractionType
+    {
+        DuringPlayback,
+        DuringPlotting
+    }
+
+    [ModOption(tooltip = "Determines how Projection Sorcery interacts with the world.\n\nDuring Playback: All interactions that happen during plotting are delayed until the relative frame is played.\n\nDuring Plotting: Interactions are enabled during plotting.")]
+    [ModOptionCategory("Projection Sorcery", 1)]
+    public static InteractionType InteractionMode = InteractionType.DuringPlayback;
+
     /// <inheritdoc/>
     public ProjectionPlottingInteractionAbility(AbilitySpell spell) : base(spell) { }
 
@@ -26,16 +35,25 @@ public class ProjectionPlottingInteractionAbility : Ability
 
     public void OnEnterPlotting()
     {
+        if (InteractionMode == InteractionType.DuringPlotting)
+            return;
+
         Spell.spellCaster.ragdollHand.ragdoll.ForBothHands(hand => hand.colliderGroup.colliders.ForEach(col => col.enabled = false));
     }
 
     public void OnExitPlotting()
     {
+        if (InteractionMode == InteractionType.DuringPlotting)
+            return;
+
         Spell.spellCaster.ragdollHand.ragdoll.ForBothHands(hand => hand.colliderGroup.colliders.ForEach(col => col.enabled = true));
     }
 
     public void OnPlaybackTick(PlottedFrame enteredFrame)
     {
+        if (InteractionMode == InteractionType.DuringPlotting)
+            return;
+
         FakeFrameCollision(Spell.spellCaster.ragdollHand.creature.handLeft, enteredFrame.LeftHand);
         FakeFrameCollision(Spell.spellCaster.ragdollHand.creature.handRight, enteredFrame.RightHand);
     }
