@@ -90,7 +90,7 @@ public class ProjectionSorcerySpell : AbilitySpell
         return new List<Ability>
         {
             new ProjectionPlottingAbility(this),
-            new ProjectionEffectsAbility(this),
+            new ProjectionPlottingEffectsAbility(this),
             new ProjectionPlottingFreezeAbility(this),
             new ProjectionPlottingInteractionAbility(this)
         };

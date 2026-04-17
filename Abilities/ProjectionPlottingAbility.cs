@@ -97,7 +97,10 @@ public class ProjectionPlottingAbility : Ability
         {
             yield return new WaitForSeconds(PlottingInterval);
 
-            PlottedFrame frame = new PlottedFrame(Spell.spellCaster.ragdollHand.creature.transform.position, Spell.spellCaster.ragdollHand.creature.transform.rotation);
+            PlottedFrame.Hand lhand = new PlottedFrame.Hand(Spell.spellCaster.ragdollHand.creature.handLeft.transform.position, Spell.spellCaster.ragdollHand.creature.handLeft.transform.rotation);
+            PlottedFrame.Hand rhand = new PlottedFrame.Hand(Spell.spellCaster.ragdollHand.creature.handRight.transform.position, Spell.spellCaster.ragdollHand.creature.handRight.transform.rotation);
+
+            PlottedFrame frame = new PlottedFrame(Spell.spellCaster.ragdollHand.creature.transform.position, Spell.spellCaster.ragdollHand.creature.transform.rotation, lhand, rhand);
             PlottedFrames.AddLast(frame);
 
             OnPlottingTick.Invoke(frame);
@@ -110,13 +113,30 @@ public class ProjectionPlottingAbility : Ability
 /// </summary>
 public class PlottedFrame
 {
+    public struct Hand
+    {
+        public Hand(Vector3 position, Quaternion rotation)
+        {
+            Position = position;
+            Rotation = rotation;
+        }
+
+        public Vector3 Position { get; set; }
+        public Quaternion Rotation { get; set; }
+    }
+
     /// <summary> Initializes a new instance of the <see cref="PlottedFrame"/> class. </summary>
-    public PlottedFrame(Vector3 rootPos, Quaternion rootRot)
+    public PlottedFrame(Vector3 rootPos, Quaternion rootRot, Hand leftHand, Hand rightHand)
     {
         RootPosition = rootPos;
         RootRotation = rootRot;
+        LeftHand = leftHand;
+        RightHand = rightHand;
     }
 
     public Vector3 RootPosition { get; set; }
     public Quaternion RootRotation { get; set; }
+
+    public Hand LeftHand { get; set; }
+    public Hand RightHand { get; set; }
 }
