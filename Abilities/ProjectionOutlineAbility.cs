@@ -10,9 +10,19 @@ namespace ProjectionSorcery.Abilities;
 
 public class ProjectionOutlineAbility : Ability
 {
+    public enum OutlineType
+    {
+        Outlined,
+        Solid
+    }
+
     [ModOption]
     [ModOptionCategory("Outline", 1)]
     public static bool Outlines = true;
+
+    [ModOption]
+    [ModOptionCategory("Outline", 1)]
+    public static OutlineType OutlineStyle = OutlineType.Outlined;
 
     [ModOption(interactionType = ModOption.InteractionType.Slider)]
     [ModOptionCategory("Outline", 1)]
@@ -67,28 +77,16 @@ public class ProjectionOutlineAbility : Ability
         GameObject outline = new GameObject("Outline");
 
         material ??= new Material(OutlineShader); // This gets disposed by the SmartObject<Mesh>
+        if (OutlineStyle == OutlineType.Outlined)
+            material.SetFloat("_Power", 4f);
+        else
+            material.SetFloat("_Power", 0.1f);
 
         material.color = OutlineColor * 2f;
-        material.SetInt("_Power", 3);
 
         foreach(SkinnedMeshRenderer renderer in creature.GetComponentsInChildren<SkinnedMeshRenderer>())
         {
             SmartObject<Mesh> bakedMesh = new Mesh();
-
-            // When the Garbage Collector wants to dispose the mesh we politely ask it to delay disposal until we reach the relative frame
-            bakedMesh.OnDisposed.AddFirst(() =>
-            {
-                bakedMesh.OnDisposed.Cancelled = true;
-
-                CoroutineRunner.Instance.PlayAfterYield(() =>
-                {
-                    bakedMesh.ForceDispose();
-
-                    Object.Destroy(material);
-                    Object.Destroy(outline);
-
-                }, new WaitUntil(() => Spell.GetAbility<ProjectionAbility>()?.IsPlotting == false));
-            });
 
             renderer.BakeMesh(bakedMesh, true);
 
@@ -106,6 +104,22 @@ public class ProjectionOutlineAbility : Ability
             mr.receiveShadows = false;
             mr.shadowCastingMode = ShadowCastingMode.Off;
             mr.sharedMaterials = new Material[] { material };
+
+            // When the Garbage Collector wants to dispose the mesh we politely ask it to delay disposal until we reach the relative frame
+            bakedMesh.OnDisposed.AddFirst(() =>
+            {
+                bakedMesh.OnDisposed.Cancelled = true;
+
+                CoroutineRunner.Instance.PlayAfterYield(() =>
+                {
+                    bakedMesh.ForceDispose();
+
+                    Object.Destroy(meshObject);
+                    Object.Destroy(material);
+                    Object.Destroy(outline);
+
+                }, new WaitUntil(() => Spell.GetAbility<ProjectionAbility>()?.IsPlotting == false));
+            });
         }
 
         return outline;
