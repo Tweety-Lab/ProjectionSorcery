@@ -6,8 +6,10 @@ namespace ProjectionSorcery.Components;
 
 public class ItemFreezeManager : FreezeManager<Item>
 {
-    /// <summary> All currently frozen items. </summary>
-    public static Dictionary<Item, FrozenItemData> FrozenItems = new Dictionary<Item, FrozenItemData>();
+    public bool IsFrozen { get; private set; } = false;
+
+    public Vector3 SavedVelocity { get; set; }
+    public Vector3 SavedAngularVelocity { get; set; }
 
     /// <inheritdoc/>
     public override void Freeze()
@@ -15,36 +17,24 @@ public class ItemFreezeManager : FreezeManager<Item>
         if (Target.physicBody.isKinematic)
             return;
 
-        FrozenItemData data = new FrozenItemData()
-        {
-            Velocity = Target.physicBody.velocity,
-            AngularVelocity = Target.physicBody.angularVelocity
-        };
+        SavedVelocity = Target.physicBody.velocity;
+        SavedAngularVelocity = Target.physicBody.angularVelocity;
 
         Target.physicBody.isEnabled = false;
 
-        FrozenItems.Add(Target, data);
+        IsFrozen = true;
     }
 
     /// <inheritdoc/>
     public override void UnFreeze()
     {
-        if (FrozenItems.ContainsKey(Target))
+        if (IsFrozen)
         {
             Target.physicBody.isEnabled = true;
-            Target.physicBody.velocity = FrozenItems[Target].Velocity;
-            Target.physicBody.angularVelocity = FrozenItems[Target].AngularVelocity;
+            Target.physicBody.velocity = SavedVelocity;
+            Target.physicBody.angularVelocity = SavedAngularVelocity;
 
-            FrozenItems.Remove(Target);
+            IsFrozen = false;
         }
     }
-}
-
-/// <summary>
-/// Data Representation of a frozen item.
-/// </summary>
-public struct FrozenItemData
-{
-    public Vector3 Velocity { get; set; }
-    public Vector3 AngularVelocity { get; set; }
 }

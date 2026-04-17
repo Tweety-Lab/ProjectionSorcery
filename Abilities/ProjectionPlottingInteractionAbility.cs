@@ -65,7 +65,7 @@ public class ProjectionPlottingInteractionAbility : Ability
 
     public void FakeFrameCollision(RagdollHand hand, PlottedFrame.Hand frameHand)
     {
-        Collider[] rightHits = Physics.OverlapSphere(frameHand.Position, 0.5f);
+        Collider[] rightHits = Physics.OverlapSphere(frameHand.Position, 0.2f);
         foreach (Collider col in rightHits)
         {
             ColliderGroup target = col.GetComponentInParent<ColliderGroup>();
