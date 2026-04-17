@@ -1,5 +1,6 @@
 ﻿using AliLib.Core;
 using AliLib.Core.Abilities;
+using AliLib.Core.Events;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,12 @@ public class ProjectionPlottingLogicAbility : Ability
     [ModOptionCategory("Projection Sorcery", 1)]
     [ModOptionIntValues(4, 200, 1)]
     public static int FramesPerSecond = 24;
+
+    /// <summary> Called when the casting creature has entered a plotted frame during playback. </summary>
+    public ModEvent<PlottedFrame> OnPlaybackTick { get; } = new ModEvent<PlottedFrame>();
+
+    /// <summary> Called when the casting creature has plotted a new frame. </summary>
+    public ModEvent<PlottedFrame> OnPlottingTick { get; } = new ModEvent<PlottedFrame>();
 
     /// <summary> All currently plotted frames. </summary>
     public LinkedList<PlottedFrame> PlottedFrames { get; } = new LinkedList<PlottedFrame>(); // Linked List is slightly more perfomant 
@@ -63,6 +70,8 @@ public class ProjectionPlottingLogicAbility : Ability
             else
                 Spell.spellCaster.ragdollHand.creature.Teleport(frame.RootPosition, Quaternion.identity);
 
+            OnPlaybackTick.Invoke(frame);
+
             PlottedFrames.Remove(frame);
             yield return new WaitForSeconds(1f / FramesPerSecond);
         }
@@ -74,7 +83,11 @@ public class ProjectionPlottingLogicAbility : Ability
         while (PlottedFrames.Count < FramesPerSecond)
         {
             yield return new WaitForSeconds(PlottingInterval);
-            PlottedFrames.AddLast(new PlottedFrame { RootPosition = Spell.spellCaster.ragdollHand.creature.transform.position });
+
+            PlottedFrame frame = new PlottedFrame { RootPosition = Spell.spellCaster.ragdollHand.creature.transform.position };
+            PlottedFrames.AddLast(frame);
+
+            OnPlottingTick.Invoke(frame);
         }
     }
 }
