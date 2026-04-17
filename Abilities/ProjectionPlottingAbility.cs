@@ -9,6 +9,9 @@ using UnityEngine;
 
 namespace ProjectionSorcery.Abilities;
 
+/// <summary>
+/// Handles the core logic of the plotting mode + playback.
+/// </summary>
 public class ProjectionPlottingAbility : Ability
 {
     [ModOption]
@@ -22,19 +25,19 @@ public class ProjectionPlottingAbility : Ability
     public static int FramesPerSecond = 24;
 
     /// <summary> Called when the casting creature has entered plotting mode. </summary>
-    public ModEvent OnEnterPlotting { get; } = new ModEvent();
+    public ModEvent OnEnterPlotting { get; set; } = new ModEvent();
 
     /// <summary> Called when the casting creature has exited plotting mode. </summary>
-    public ModEvent OnExitPlotting { get; } = new ModEvent();
+    public ModEvent OnExitPlotting { get; set; } = new ModEvent();
 
     /// <summary> Called when the casting creature has entered a plotted frame during playback. </summary>
-    public ModEvent<PlottedFrame> OnPlaybackTick { get; } = new ModEvent<PlottedFrame>();
+    public ModEvent<PlottedFrame> OnPlaybackTick { get; set; } = new ModEvent<PlottedFrame>();
 
     /// <summary> Called when the casting creature has plotted a new frame. </summary>
-    public ModEvent<PlottedFrame> OnPlottingTick { get; } = new ModEvent<PlottedFrame>();
+    public ModEvent<PlottedFrame> OnPlottingTick { get; set; } = new ModEvent<PlottedFrame>();
 
     /// <summary> All currently plotted frames. </summary>
-    public LinkedList<PlottedFrame> PlottedFrames { get; } = new LinkedList<PlottedFrame>(); // Linked List is slightly more perfomant 
+    public LinkedList<PlottedFrame> PlottedFrames { get; set; } = new LinkedList<PlottedFrame>(); // Linked List is slightly more perfomant 
 
     /// <inheritdoc/>
     public ProjectionPlottingAbility(AbilitySpell spell) : base(spell) { }
