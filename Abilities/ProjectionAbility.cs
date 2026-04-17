@@ -12,7 +12,7 @@ namespace ProjectionSorcery.Abilities;
 /// <summary>
 /// Handles the core logic of the plotting mode + playback.
 /// </summary>
-public class ProjectionPlottingAbility : Ability
+public class ProjectionAbility : Ability
 {
     [ModOption]
     [ModOptionCategory("Projection Sorcery", 0)]
@@ -43,7 +43,7 @@ public class ProjectionPlottingAbility : Ability
     public bool IsPlotting => PlottedFrames.Count > 0;
 
     /// <inheritdoc/>
-    public ProjectionPlottingAbility(AbilitySpell spell) : base(spell) { }
+    public ProjectionAbility(AbilitySpell spell) : base(spell) { }
 
     /// <inheritdoc/>
     public override void Init()

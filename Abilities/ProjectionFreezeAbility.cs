@@ -8,18 +8,18 @@ namespace ProjectionSorcery.Abilities;
 /// <summary>
 /// Handles the time-freezing during plotting.
 /// </summary>
-public class ProjectionPlottingFreezeAbility : Ability
+public class ProjectionFreezeAbility : Ability
 {
     /// <inheritdoc/>
-    public ProjectionPlottingFreezeAbility(AbilitySpell spell) : base(spell) { }
+    public ProjectionFreezeAbility(AbilitySpell spell) : base(spell) { }
 
     /// <inheritdoc/>
     public override void Init()
     {
         base.Init();
 
-        Spell.GetAbility<ProjectionPlottingAbility>()?.OnEnterPlotting += OnEnterPlotting;
-        Spell.GetAbility<ProjectionPlottingAbility>()?.OnExitPlotting += OnExitPlotting;
+        Spell.GetAbility<ProjectionAbility>()?.OnEnterPlotting += OnEnterPlotting;
+        Spell.GetAbility<ProjectionAbility>()?.OnExitPlotting += OnExitPlotting;
     }
 
     public void OnEnterPlotting()

@@ -7,7 +7,7 @@ namespace ProjectionSorcery.Abilities;
 /// <summary>
 /// Handles interaction with the world during plotting mode.
 /// </summary>
-public class ProjectionPlottingInteractionAbility : Ability
+public class ProjectionInteractionAbility : Ability
 {
     public enum InteractionType
     {
@@ -25,17 +25,17 @@ public class ProjectionPlottingInteractionAbility : Ability
     public static float PlaybackDamageMultiplier = 1f;
 
     /// <inheritdoc/>
-    public ProjectionPlottingInteractionAbility(AbilitySpell spell) : base(spell) { }
+    public ProjectionInteractionAbility(AbilitySpell spell) : base(spell) { }
 
     /// <inheritdoc/>
     public override void Init()
     {
         base.Init();
 
-        Spell.GetAbility<ProjectionPlottingAbility>()?.OnEnterPlotting += OnEnterPlotting;
-        Spell.GetAbility<ProjectionPlottingAbility>()?.OnExitPlotting += OnExitPlotting;
+        Spell.GetAbility<ProjectionAbility>()?.OnEnterPlotting += OnEnterPlotting;
+        Spell.GetAbility<ProjectionAbility>()?.OnExitPlotting += OnExitPlotting;
 
-        Spell.GetAbility<ProjectionPlottingAbility>()?.OnPlaybackTick += OnPlaybackTick;
+        Spell.GetAbility<ProjectionAbility>()?.OnPlaybackTick += OnPlaybackTick;
     }
 
     public void OnEnterPlotting()

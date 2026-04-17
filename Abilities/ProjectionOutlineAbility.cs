@@ -8,7 +8,7 @@ using UnityEngine.Rendering;
 
 namespace ProjectionSorcery.Abilities;
 
-public class ProjectionPlottingOutlineAbility : Ability
+public class ProjectionOutlineAbility : Ability
 {
     [ModOption]
     [ModOptionCategory("Outline", 1)]
@@ -36,14 +36,14 @@ public class ProjectionPlottingOutlineAbility : Ability
     public static Shader? OutlineShader { get; set; }
 
     /// <inheritdoc/>
-    public ProjectionPlottingOutlineAbility(AbilitySpell spell) : base(spell) { }
+    public ProjectionOutlineAbility(AbilitySpell spell) : base(spell) { }
 
     /// <inheritdoc/>
     public override void Init()
     {
         base.Init();
 
-        Spell.GetAbility<ProjectionPlottingAbility>()?.OnPlottingTick += OnPlottingTick;
+        Spell.GetAbility<ProjectionAbility>()?.OnPlottingTick += OnPlottingTick;
     }
 
     public void OnPlottingTick(PlottedFrame plottedFrame)
@@ -87,7 +87,7 @@ public class ProjectionPlottingOutlineAbility : Ability
                     Object.Destroy(material);
                     Object.Destroy(outline);
 
-                }, new WaitUntil(() => Spell.GetAbility<ProjectionPlottingAbility>()?.IsPlotting == false));
+                }, new WaitUntil(() => Spell.GetAbility<ProjectionAbility>()?.IsPlotting == false));
             });
 
             renderer.BakeMesh(bakedMesh, true);

@@ -8,7 +8,7 @@ using UnityEngine.Rendering.Universal;
 
 namespace ProjectionSorcery.Abilities;
 
-public class ProjectionPlottingTintAbility : Ability
+public class ProjectionTintAbility : Ability
 {
     [ModOption(interactionType = ModOption.InteractionType.Slider)]
     [ModOptionCategory("Effects", 1)]
@@ -32,7 +32,7 @@ public class ProjectionPlottingTintAbility : Ability
     public Volume PostProcessVolume { get; set; }
 
     /// <inheritdoc/>
-    public ProjectionPlottingTintAbility(AbilitySpell spell) : base(spell) { }
+    public ProjectionTintAbility(AbilitySpell spell) : base(spell) { }
 
     private Coroutine? plotTintCoroutine;
     private Coroutine? plotTintUndoCoroutine;
@@ -42,8 +42,8 @@ public class ProjectionPlottingTintAbility : Ability
     {
         base.Init();
 
-        Spell.GetAbility<ProjectionPlottingAbility>()?.OnEnterPlotting += OnEnterPlotting;
-        Spell.GetAbility<ProjectionPlottingAbility>()?.OnExitPlotting += OnExitPlotting;
+        Spell.GetAbility<ProjectionAbility>()?.OnEnterPlotting += OnEnterPlotting;
+        Spell.GetAbility<ProjectionAbility>()?.OnExitPlotting += OnExitPlotting;
     }
 
     /// <inheritdoc/>

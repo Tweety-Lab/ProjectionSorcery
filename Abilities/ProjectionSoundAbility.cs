@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace ProjectionSorcery.Abilities;
 
-public class ProjectionSoundAbility : Ability
+public class ProjectionSoudAbility : Ability
 {
     [ModOption(interactionType = ModOption.InteractionType.Slider)]
     [ModOptionCategory("Sounds", 1)]
@@ -33,14 +33,14 @@ public class ProjectionSoundAbility : Ability
     public static AudioClip? PlaybackTickSound { get; set; }
 
     /// <inheritdoc/>
-    public ProjectionSoundAbility(AbilitySpell spell) : base(spell) { }
+    public ProjectionSoudAbility(AbilitySpell spell) : base(spell) { }
 
     /// <inheritdoc/>
     public override void Init()
     {
         base.Init();
 
-        Spell.GetAbility<ProjectionPlottingAbility>()?.OnEnterPlotting += () =>
+        Spell.GetAbility<ProjectionAbility>()?.OnEnterPlotting += () =>
         {
             if (PlottingEnterSound == null)
                 return;
@@ -48,7 +48,7 @@ public class ProjectionSoundAbility : Ability
             Audio.PlayNoBlend(PlottingEnterSound, ThunderRoad.AudioMixerName.Effect, PlottingEnterVolume);
         };
 
-        Spell.GetAbility<ProjectionPlottingAbility>()?.OnExitPlotting += () =>
+        Spell.GetAbility<ProjectionAbility>()?.OnExitPlotting += () =>
         {
             if (PlottingExitSound == null)
                 return;
@@ -56,7 +56,7 @@ public class ProjectionSoundAbility : Ability
             Audio.PlayNoBlend(PlottingExitSound, ThunderRoad.AudioMixerName.Effect, PlottingExitVolume);
         };
 
-        Spell.GetAbility<ProjectionPlottingAbility>()?.OnPlaybackTick += (frame) =>
+        Spell.GetAbility<ProjectionAbility>()?.OnPlaybackTick += (frame) =>
         {
             if (PlaybackTickSound == null)
                 return;
