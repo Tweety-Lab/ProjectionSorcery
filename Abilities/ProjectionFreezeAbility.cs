@@ -10,6 +10,10 @@ namespace ProjectionSorcery.Abilities;
 /// </summary>
 public class ProjectionFreezeAbility : Ability
 {
+    [ModOption]
+    [ModOptionCategory("Projection Sorcery", 0)]
+    public static bool FreezeTime = true;
+
     /// <inheritdoc/>
     public ProjectionFreezeAbility(AbilitySpell spell) : base(spell) { }
 
@@ -24,6 +28,9 @@ public class ProjectionFreezeAbility : Ability
 
     public void OnEnterPlotting()
     {
+        if (!FreezeTime)
+            return;
+
         foreach (Creature creature in Creature.allActive)
         {
             CreatureFreezeManager freezeManager = creature.GetOrAddComponent<CreatureFreezeManager>();
@@ -39,6 +46,9 @@ public class ProjectionFreezeAbility : Ability
 
     public void OnExitPlotting()
     {
+        if (!FreezeTime)
+            return;
+
         foreach (Creature creature in Creature.allActive)
         {
             CreatureFreezeManager freezeManager = creature.GetOrAddComponent<CreatureFreezeManager>();
