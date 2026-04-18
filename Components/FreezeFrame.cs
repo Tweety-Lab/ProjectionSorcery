@@ -1,6 +1,8 @@
 ﻿using AliLib.Core;
 using AliLib.Core.Assets;
 using AliLib.Core.Events;
+using ProjectionSorcery.Components.FreezeManagers;
+using ThunderRoad;
 using UnityEngine;
 
 namespace ProjectionSorcery.Components;
@@ -49,7 +51,7 @@ public class FreezeFrame : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.impulse.magnitude > 5)
+        if (collision.impulse.magnitude > 5 && IsBreakable)
             ForceBreak(collision.impulse);
     }
 
@@ -69,10 +71,34 @@ public class FreezeFrame : MonoBehaviour
     public void Freeze(GameObject target)
     {
         Debug.Log("Freezing " + target.name);
+
+        if (target.GetComponent<Item>())
+            target.AddComponent<ItemFreezeManager>().Freeze();
+
+        foreach (Collider col in target.GetComponentsInChildren<Collider>())
+            col.enabled = false;
+
+        Vector3 forward = Camera.main.transform.forward;
+        forward.y = 0;
+
+        Quaternion flatRotation = Quaternion.LookRotation(-forward);
+
+        target.transform.rotation = flatRotation;
+        target.transform.localScale = new Vector3(target.transform.localScale.x, target.transform.localScale.y, 0.01f);
+
+        transform.position = target.transform.position;
+        transform.rotation = Quaternion.LookRotation(-forward) * Quaternion.Euler(0, -90, 0);
     }
 
     public void UnFreeze(GameObject target)
     {
         Debug.Log("Unfreezing " + target.name);
+        if (target.GetComponent<Item>())
+            target.GetComponent<ItemFreezeManager>().UnFreeze();
+
+        foreach (Collider col in target.GetComponentsInChildren<Collider>())
+            col.enabled = true;
+
+        target.transform.localScale = new Vector3(target.transform.localScale.x, target.transform.localScale.y, 1f);
     }
 }

@@ -30,8 +30,8 @@ public class ProjectionFreezeFrameAbility : Ability
 
         foreach (var item in Item.allActive)
         {
-            GameObject.Instantiate(FreezeFrame, item.transform.position, item.transform.rotation);
-            FreezeFrame.GetComponent<Components.FreezeFrame>().Target = item.gameObject;
+            GameObject instance = GameObject.Instantiate(FreezeFrame, item.transform.position, item.transform.rotation);
+            instance.GetComponent<Components.FreezeFrame>().Target = item.gameObject;
         }
     }
 }

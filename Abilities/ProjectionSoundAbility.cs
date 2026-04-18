@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace ProjectionSorcery.Abilities;
 
-public class ProjectionSoudAbility : Ability
+public class ProjectionSoundAbility : Ability
 {
     [ModOption(interactionType = ModOption.InteractionType.Slider)]
     [ModOptionCategory("Sounds", 1)]
@@ -34,7 +34,7 @@ public class ProjectionSoudAbility : Ability
     public static AudioClip? PlaybackTickSound { get; set; }
 
     /// <inheritdoc/>
-    public ProjectionSoudAbility(AbilitySpell spell) : base(spell) { }
+    public ProjectionSoundAbility(AbilitySpell spell) : base(spell) { }
 
     /// <inheritdoc/>
     public override void Init()
