@@ -68,12 +68,19 @@ public class ProjectionAbility : Ability
                 return;
 
             Debug.Log("Launching Player");
-            PlottedFrame frame = PlottedFrames.Last.Value;
+            PlottedFrame lastFrame = PlottedFrames.Last.Value;
+            PlottedFrame? secondLastFrame = PlottedFrames.Last.Previous?.Value;
+
+            Vector3 launchDir = default;
+
+            if (secondLastFrame != null)
+                launchDir = (lastFrame.RootPosition - secondLastFrame.RootPosition).normalized;
+            else
+                launchDir = lastFrame.RootRotation * Vector3.forward;
 
             CoroutineRunner.Instance.PlayAfterYield(() =>
             {
-                Vector3 forward = frame.RootRotation * Vector3.forward;
-                Vector3 velocity = forward * 2000f * AccumulatedSpeedMultiplier;
+                Vector3 velocity = launchDir * 2000f * AccumulatedSpeedMultiplier;
 
                 Spell.spellCaster.ragdollHand.creature.AddForce(velocity, ForceMode.Impulse);
 
@@ -89,24 +96,22 @@ public class ProjectionAbility : Ability
         }
 
         if (LaunchVelocity != null)
-        {
             AccumulatedSpeedMultiplier += 0.2f;
-
-            float modifier = LaunchVelocity.Value * 0.001f * AccumulatedSpeedMultiplier;
-            Spell.spellCaster.ragdollHand.creature.locomotion.SetSpeedModifier(this, modifier, modifier, modifier, modifier, 1f, 1f);
-
-            Debug.Log(modifier);
-        } else
-        {
+        else
             AccumulatedSpeedMultiplier = 1f;
-        }
+
 
         Coroutine plotting = CoroutineRunner.Instance.StartCoroutine(PlottingTick());
+        if (LaunchVelocity != null)
+        {
+            float modifier = LaunchVelocity.Value * 0.0005f * AccumulatedSpeedMultiplier;
+            Spell.spellCaster.ragdollHand.creature.currentLocomotion.SetAllSpeedModifiers(this, modifier);
+        }
 
         // Since we only need to run this logic if StartCast has already fired we can subscribe here
         void StopCast()
         {
-            Spell.spellCaster.ragdollHand.creature.locomotion.RemoveSpeedModifier(this);
+            Spell.spellCaster.ragdollHand.creature.currentLocomotion.RemoveSpeedModifier(this);
 
             // Prevent enumeration issues
             CoroutineRunner.Instance.PlayAfterYield(() => Spell.OnStopCast -= StopCast, new WaitForEndOfFrame());
