@@ -24,6 +24,11 @@ public class ProjectionAbility : Ability
     [ModOptionIntValues(4, 200, 1)]
     public static int FramesPerSecond = 24;
 
+    [ModOption]
+    [ModOptionCategory("Projection Sorcery", 0)]
+    [ModOptionIntValues(1, 10, 1)]
+    public static int VelocityStackingGracePeriod = 5;
+
     /// <summary> Called when the casting creature has entered plotting mode. </summary>
     public ModEvent OnEnterPlotting { get; set; } = new ModEvent();
 
@@ -64,7 +69,7 @@ public class ProjectionAbility : Ability
         // TODO: Clean velocity stacking up
         if (IsPlotting)
         {
-            if (PlottedFrames.Count > 5)
+            if (PlottedFrames.Count > VelocityStackingGracePeriod)
                 return;
 
             Debug.Log("Launching Player");
