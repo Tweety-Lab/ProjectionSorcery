@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace ProjectionSorcery.Components;
+namespace ProjectionSorcery.Components.FreezeManagers;
 
 /// <summary> Non-Generic interface for <see cref="FreezeManager"/> </summary>
 public interface IFreezeManager

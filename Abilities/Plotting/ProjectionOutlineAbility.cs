@@ -6,7 +6,7 @@ using ThunderRoad;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-namespace ProjectionSorcery.Abilities;
+namespace ProjectionSorcery.Abilities.Plotting;
 
 public class ProjectionOutlineAbility : Ability
 {

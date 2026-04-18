@@ -3,7 +3,7 @@ using System.Linq;
 using ThunderRoad;
 using UnityEngine;
 
-namespace ProjectionSorcery.Components;
+namespace ProjectionSorcery.Components.FreezeManagers;
 
 public class CreatureFreezeManager : FreezeManager<Creature>
 {

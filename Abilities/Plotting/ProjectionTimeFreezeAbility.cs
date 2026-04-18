@@ -1,21 +1,21 @@
 ﻿using AliLib.Core.Abilities;
-using ProjectionSorcery.Components;
+using ProjectionSorcery.Components.FreezeManagers;
 using ThunderRoad;
 using UnityEngine;
 
-namespace ProjectionSorcery.Abilities;
+namespace ProjectionSorcery.Abilities.Plotting;
 
 /// <summary>
 /// Handles the time-freezing during plotting.
 /// </summary>
-public class ProjectionFreezeAbility : Ability
+public class ProjectionTimeFreezeAbility : Ability
 {
     [ModOption]
     [ModOptionCategory("Projection Sorcery", 0)]
     public static bool FreezeTime = true;
 
     /// <inheritdoc/>
-    public ProjectionFreezeAbility(AbilitySpell spell) : base(spell) { }
+    public ProjectionTimeFreezeAbility(AbilitySpell spell) : base(spell) { }
 
     /// <inheritdoc/>
     public override void Init()

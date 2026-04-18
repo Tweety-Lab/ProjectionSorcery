@@ -1,9 +1,10 @@
-﻿using ProjectionSorcery.Abilities;
+﻿using AliLib.Core.Assets;
+using ProjectionSorcery.Abilities.Plotting;
 using System.Collections.Generic;
 using ThunderRoad;
 using UnityEngine;
 
-namespace ProjectionSorcery.Components;
+namespace ProjectionSorcery.Components.FreezeManagers;
 
 public class ItemFreezeManager : FreezeManager<Item>
 {

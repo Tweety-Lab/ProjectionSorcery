@@ -2,7 +2,7 @@
 using ThunderRoad;
 using UnityEngine;
 
-namespace ProjectionSorcery.Abilities;
+namespace ProjectionSorcery.Abilities.Plotting;
 
 /// <summary>
 /// Handles interaction with the world during plotting mode.

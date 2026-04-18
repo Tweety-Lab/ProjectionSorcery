@@ -6,7 +6,7 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
 
-namespace ProjectionSorcery.Abilities;
+namespace ProjectionSorcery.Abilities.Plotting;
 
 public class ProjectionTintAbility : Ability
 {

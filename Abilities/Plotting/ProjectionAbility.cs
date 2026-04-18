@@ -7,7 +7,7 @@ using System.Linq;
 using ThunderRoad;
 using UnityEngine;
 
-namespace ProjectionSorcery.Abilities;
+namespace ProjectionSorcery.Abilities.Plotting;
 
 /// <summary>
 /// Handles the core logic of the plotting mode + playback.

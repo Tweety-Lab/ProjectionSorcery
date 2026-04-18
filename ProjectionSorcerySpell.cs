@@ -1,5 +1,7 @@
 ﻿using AliLib.Core;
 using AliLib.Core.Abilities;
+using ProjectionSorcery.Abilities.Plotting;
+using ProjectionSorcery.Abilities.FreezeFrame;
 using ProjectionSorcery.Abilities;
 using System.Collections.Generic;
 
@@ -92,9 +94,10 @@ public class ProjectionSorcerySpell : AbilitySpell
             new ProjectionAbility(this),
             new ProjectionTintAbility(this),
             new ProjectionOutlineAbility(this),
-            new ProjectionFreezeAbility(this),
+            new ProjectionTimeFreezeAbility(this),
             new ProjectionInteractionAbility(this),
-            new ProjectionSoudAbility(this)
+            new ProjectionSoudAbility(this),
+            new ProjectionFreezeFrameAbility(this)
         };
     }
 }
