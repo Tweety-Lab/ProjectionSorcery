@@ -42,6 +42,12 @@ public class ProjectionAbility : Ability
     /// <summary> Whether the creature is currently in plotting mode. </summary>
     public bool IsPlotting => PlottedFrames.Count > 0;
 
+    /// <summary> The creatures velocity after launching, or null if not currently launching. </summary>
+    public float? LaunchVelocity { get; set; } = null;
+
+    /// <summary> The creatures accumulated speed multiplier after launching. </summary>
+    public float AccumulatedSpeedMultiplier { get; set; } = 1f;
+
     /// <inheritdoc/>
     public ProjectionAbility(AbilitySpell spell) : base(spell) { }
 
@@ -55,14 +61,53 @@ public class ProjectionAbility : Ability
 
     public void OnStartCast()
     {
+        // TODO: Clean velocity stacking up
         if (IsPlotting)
+        {
+            if (PlottedFrames.Count > 5)
+                return;
+
+            Debug.Log("Launching Player");
+            PlottedFrame frame = PlottedFrames.Last.Value;
+
+            CoroutineRunner.Instance.PlayAfterYield(() =>
+            {
+                Vector3 forward = frame.RootRotation * Vector3.forward;
+                Vector3 velocity = forward * 2000f * AccumulatedSpeedMultiplier;
+
+                Spell.spellCaster.ragdollHand.creature.AddForce(velocity, ForceMode.Impulse);
+
+                LaunchVelocity = velocity.magnitude;
+
+                CoroutineRunner.Instance.PlayAfterDelay(() =>
+                {
+                    LaunchVelocity = null;
+                }, 1f);
+            }, new WaitUntil(() => !IsPlotting));
+
             return;
+        }
+
+        if (LaunchVelocity != null)
+        {
+            AccumulatedSpeedMultiplier += 0.2f;
+
+            float modifier = LaunchVelocity.Value * 0.001f * AccumulatedSpeedMultiplier;
+            Spell.spellCaster.ragdollHand.creature.locomotion.SetSpeedModifier(this, modifier, modifier, modifier, modifier, 1f, 1f);
+
+            Debug.Log(modifier);
+        } else
+        {
+            AccumulatedSpeedMultiplier = 1f;
+        }
 
         Coroutine plotting = CoroutineRunner.Instance.StartCoroutine(PlottingTick());
 
         // Since we only need to run this logic if StartCast has already fired we can subscribe here
         void StopCast()
         {
+            Spell.spellCaster.ragdollHand.creature.locomotion.RemoveSpeedModifier(this);
+
             // Prevent enumeration issues
             CoroutineRunner.Instance.PlayAfterYield(() => Spell.OnStopCast -= StopCast, new WaitForEndOfFrame());
 
