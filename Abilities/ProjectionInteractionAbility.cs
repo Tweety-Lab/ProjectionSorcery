@@ -43,7 +43,11 @@ public class ProjectionInteractionAbility : Ability
         if (InteractionMode == InteractionType.DuringPlotting)
             return;
 
-        Spell.spellCaster.ragdollHand.ragdoll.ForBothHands(hand => hand.colliderGroup.colliders.ForEach(col => col.enabled = false));
+        Spell.spellCaster.ragdollHand.ragdoll.ForBothHands(hand =>
+        {
+            hand.colliderGroup.colliders.ForEach(col => col.enabled = false);
+            hand.grabbedHandle?.item.colliderGroups.ForEach(col => col.colliders.ForEach(col => col.enabled = false));
+        });
     }
 
     public void OnExitPlotting()
@@ -51,7 +55,11 @@ public class ProjectionInteractionAbility : Ability
         if (InteractionMode == InteractionType.DuringPlotting)
             return;
 
-        Spell.spellCaster.ragdollHand.ragdoll.ForBothHands(hand => hand.colliderGroup.colliders.ForEach(col => col.enabled = true));
+        Spell.spellCaster.ragdollHand.ragdoll.ForBothHands(hand =>
+        {
+            hand.colliderGroup.colliders.ForEach(col => col.enabled = true);
+            hand.grabbedHandle?.item.colliderGroups.ForEach(col => col.colliders.ForEach(col => col.enabled = true));
+        });
     }
 
     public void OnPlaybackTick(PlottedFrame enteredFrame)

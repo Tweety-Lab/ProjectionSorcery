@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using ProjectionSorcery.Abilities;
+using System.Collections.Generic;
 using ThunderRoad;
 using UnityEngine;
 
@@ -17,6 +18,13 @@ public class ItemFreezeManager : FreezeManager<Item>
         if (Target.physicBody.isKinematic)
             return;
 
+        if (Target.IsHeldByPlayer)
+        {
+            Target.OnHandleReleaseEvent += OnHandleRelease;
+            return;
+        }
+
+
         SavedVelocity = Target.physicBody.velocity;
         SavedAngularVelocity = Target.physicBody.angularVelocity;
 
@@ -29,6 +37,8 @@ public class ItemFreezeManager : FreezeManager<Item>
     /// <inheritdoc/>
     public override void UnFreeze()
     {
+        Target.OnHandleReleaseEvent -= OnHandleRelease;
+
         if (IsFrozen)
         {
             Target.physicBody.isEnabled = true;
@@ -38,5 +48,14 @@ public class ItemFreezeManager : FreezeManager<Item>
 
             IsFrozen = false;
         }
+    }
+
+    public void OnHandleRelease(Handle handle, RagdollHand hand, bool _)
+    {
+        // HACK: We should move this logic to ProjectionInteractionAbility
+        if (ProjectionInteractionAbility.InteractionMode == ProjectionInteractionAbility.InteractionType.DuringPlayback)
+            handle.item.colliderGroups.ForEach(cg => cg.colliders.ForEach(col => col.enabled = true));
+
+        Freeze();
     }
 }
