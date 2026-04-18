@@ -39,8 +39,25 @@ public class ProjectionOutlineAbility : Ability
     [ModOptionFloatValues(0f, 1f, 0.05f)]
     public static float OutlineColorB = 1f;
 
+    [ModOption]
+    [ModOptionCategory("Outline", 1)]
+    public static bool ChromaticColor = false;
+
+    /// <summary> The current chromatic hue offset if <see cref="ChromaticColor"/> is enabled. </summary>
+    public static float ChromaticHueOffset {  get; set; } = 0;
+
     /// <summary> The color to tint the screen when in Hack Mode. </summary>
-    public static Color OutlineColor => new Color(OutlineColorR, OutlineColorG, OutlineColorB);
+    public static Color OutlineColor
+    {
+        get
+        {
+            if (!ChromaticColor)
+                return new Color(OutlineColorR, OutlineColorG, OutlineColorB);
+            
+            ChromaticHueOffset = (ChromaticHueOffset + 0.1f) % 6;
+            return Color.HSVToRGB(ChromaticHueOffset / 6f, 0.4f, 1f);
+        }
+    }
 
     [Addressable("ProjectionSorcery.Outline")]
     public static Shader? OutlineShader { get; set; }
@@ -65,14 +82,11 @@ public class ProjectionOutlineAbility : Ability
             return;
 
         // IK Solves at the end of the frame
-        CoroutineRunner.Instance.PlayAfterYield(() =>
-        {
-            SpawnOutline(Spell.spellCaster.ragdollHand.creature, currentFrame++ * (1f / ProjectionAbility.FramesPerSecond));
-        }, new WaitForEndOfFrame());
+        CoroutineRunner.Instance.PlayAfterYield(() => SpawnOutline(Spell.spellCaster.ragdollHand.creature, currentFrame++ * (1f / ProjectionAbility.FramesPerSecond)), new WaitForEndOfFrame());
     }
 
     /// <summary> Spawns a plotting outline for a creautre. </summary>
-    public GameObject? SpawnOutline(Creature creature, float disposalDelay = 0f, Material? material = null)
+    public GameObject? SpawnOutline(Creature creature, float disposalDelay = 10f, Material? material = null)
     {
         if (OutlineShader == null)
             return null;
