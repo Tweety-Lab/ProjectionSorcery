@@ -48,12 +48,15 @@ public class ProjectionOutlineAbility : Ability
     /// <inheritdoc/>
     public ProjectionOutlineAbility(AbilitySpell spell) : base(spell) { }
 
+    private int currentFrame = 0;
+
     /// <inheritdoc/>
     public override void Init()
     {
         base.Init();
 
         Spell.GetAbility<ProjectionAbility>()?.OnPlottingTick += OnPlottingTick;
+        Spell.GetAbility<ProjectionAbility>()?.OnEnterPlotting += () => currentFrame = 0;
     }
 
     public void OnPlottingTick(PlottedFrame plottedFrame)
@@ -64,12 +67,12 @@ public class ProjectionOutlineAbility : Ability
         // IK Solves at the end of the frame
         CoroutineRunner.Instance.PlayAfterYield(() =>
         {
-            SpawnOutline(Spell.spellCaster.ragdollHand.creature);
+            SpawnOutline(Spell.spellCaster.ragdollHand.creature, currentFrame++ * (1f / ProjectionAbility.FramesPerSecond));
         }, new WaitForEndOfFrame());
     }
 
     /// <summary> Spawns a plotting outline for a creautre. </summary>
-    public GameObject? SpawnOutline(Creature creature, Material? material = null)
+    public GameObject? SpawnOutline(Creature creature, float disposalDelay = 0f, Material? material = null)
     {
         if (OutlineShader == null)
             return null;
@@ -110,7 +113,7 @@ public class ProjectionOutlineAbility : Ability
             {
                 bakedMesh.OnDisposed.Cancelled = true;
 
-                CoroutineRunner.Instance.PlayAfterYield(() =>
+                CoroutineRunner.Instance.PlayAfterDelay(() =>
                 {
                     bakedMesh.ForceDispose();
 
@@ -118,7 +121,7 @@ public class ProjectionOutlineAbility : Ability
                     Object.Destroy(material);
                     Object.Destroy(outline);
 
-                }, new WaitUntil(() => Spell.GetAbility<ProjectionAbility>()?.IsPlotting == false));
+                }, disposalDelay);
             });
         }
 
