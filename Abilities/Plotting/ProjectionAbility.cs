@@ -94,7 +94,7 @@ public class ProjectionAbility : Ability
                 CoroutineRunner.Instance.PlayAfterDelay(() =>
                 {
                     LaunchVelocity = null;
-                }, 1f);
+                }, AccumulatedSpeedMultiplier);
             }, new WaitUntil(() => !IsPlotting));
 
             return;
