@@ -10,30 +10,51 @@ namespace ProjectionSorcery.Abilities.FreezeFrame;
 
 public class ProjectionFreezeFrameAbility : Ability
 {
+    public enum FreezeType
+    {
+        GrabAndTrigger,
+        Collision
+    }
+
+    [ModOption]
+    [ModOptionCategory("Freeze Frames", 0)]
+    public static FreezeType FreezeMode { get; set; }
+
     [Addressable("ProjectionSorcery.FreezeFrame")]
     public static GameObject? FreezeFrame { get; private set; }
 
     /// <inheritdoc/>
     public ProjectionFreezeFrameAbility(AbilitySpell spell) : base(spell) { }
-
+    
     /// <inheritdoc/>
     public override void Init()
     {
         base.Init();
 
-        Spell.OnStartCast += OnStartCast;
+        Spell.OnUpdateCast += OnUpdateCast;
     }
 
-    public void OnStartCast()
+    /// <inheritdoc/>
+    public override void OnEquip() => Spell.spellCaster.ragdollHand.collisionHandler.OnCollisionStartEvent += OnCollideStart;
+
+    /// <inheritdoc/>
+    public override void OnUnequip() => Spell.spellCaster.ragdollHand.collisionHandler.OnCollisionStartEvent -= OnCollideStart;
+
+    public void OnUpdateCast()
     {
-        if (FreezeFrame == null)
+        if (FreezeFrame == null || FreezeMode != FreezeType.GrabAndTrigger)
             return;
 
-        foreach (var creature in Creature.allActive)
-        {
-            if (creature.isPlayer)
-                continue;
+        // Todo
+    }
 
+    public void OnCollideStart(CollisionInstance col)
+    {
+        if (FreezeFrame == null || FreezeMode != FreezeType.Collision)
+            return;
+
+        if (col.targetCollider.transform.root.TryGetComponent<Creature>(out var creature))
+        {
             GameObject instance = GameObject.Instantiate(FreezeFrame, creature.transform.position, Quaternion.identity);
             instance.GetComponent<Components.FreezeFrame>().Target = creature;
         }
