@@ -15,17 +15,17 @@ namespace ProjectionSorcery.Abilities.Plotting;
 public class ProjectionAbility : Ability
 {
     [ModOption]
-    [ModOptionCategory("Projection Sorcery", 0)]
+    [ModOptionCategory("Plotting", 0)]
     [ModOptionFloatValues(0.1f, 1f, 0.1f)]
     public static float PlottingInterval = 0.2f;
 
     [ModOption]
-    [ModOptionCategory("Projection Sorcery", 0)]
+    [ModOptionCategory("Plotting", 0)]
     [ModOptionIntValues(4, 200, 1)]
     public static int FramesPerSecond = 24;
 
     [ModOption]
-    [ModOptionCategory("Projection Sorcery", 0)]
+    [ModOptionCategory("Plotting", 0)]
     [ModOptionIntValues(1, 10, 1)]
     public static int VelocityStackingGracePeriod = 5;
 

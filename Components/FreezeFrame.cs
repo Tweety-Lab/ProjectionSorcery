@@ -5,14 +5,17 @@ using ProjectionSorcery.Components.FreezeManagers;
 using System.Linq;
 using ThunderRoad;
 using UnityEngine;
-using static ThunderRoad.EffectModuleMesh;
-using static ThunderRoad.FileManager;
 
 namespace ProjectionSorcery.Components;
 
 [AddressableComponent("ProjectionSorcery.FreezeFrame")]
 public class FreezeFrame : MonoBehaviour
 {
+    [ModOption]
+    [ModOptionCategory("Freeze Frames", 0)]
+    [ModOptionFloatValues(0.5f, 10f, 0.5f)]
+    public static float MinimumBreakForce = 3f;
+
     [Addressable("ProjectionSorcery.Sounds.GlassSpawn")]
     public static AudioClip? SpawnSound { get; set; }
 
@@ -59,7 +62,7 @@ public class FreezeFrame : MonoBehaviour
     /// <returns> True if the frame was broken. </returns>
     public bool TryBreak(Vector3 impulse = default)
     {
-        if (impulse.magnitude > 5 && IsBreakable)
+        if (impulse.magnitude > MinimumBreakForce && IsBreakable)
         {
             ForceBreak(impulse);
             return true;

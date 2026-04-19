@@ -19,11 +19,11 @@ public class ProjectionTimeFreezeAbility : Ability
     }
 
     [ModOption]
-    [ModOptionCategory("Projection Sorcery", 0)]
+    [ModOptionCategory("Plotting", 0)]
     public static bool FreezeTime = true;
 
     [ModOption(tooltip = "Determines how fast creatures react to Projection Sorecry users.\n\nInstant: Creatures react as soon as playback ends.\nDelayed: Creatures react after a short delay.\nLevelDependant: The stronger the creature the faster they react.")]
-    [ModOptionCategory("Projection Sorcery", 0)]
+    [ModOptionCategory("Plotting", 0)]
     public static ReactionType EnemyReactionType = ReactionType.Instant;
 
     /// <inheritdoc/>

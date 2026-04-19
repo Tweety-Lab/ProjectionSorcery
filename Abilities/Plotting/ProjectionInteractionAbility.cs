@@ -16,11 +16,11 @@ public class ProjectionInteractionAbility : Ability
     }
 
     [ModOption(tooltip = "Determines how Projection Sorcery interacts with the world.\n\nDuring Playback: All interactions that happen during plotting are delayed until the relative frame is played.\n\nDuring Plotting: Interactions are enabled during plotting.")]
-    [ModOptionCategory("Projection Sorcery", 1)]
+    [ModOptionCategory("Plotting", 1)]
     public static InteractionType InteractionMode = InteractionType.DuringPlayback;
 
     [ModOption]
-    [ModOptionCategory("Projection Sorcery", 1)]
+    [ModOptionCategory("Plotting", 1)]
     [ModOptionFloatValues(0.1f, 5f, 0.1f)]
     public static float PlaybackDamageMultiplier = 1f;
 
