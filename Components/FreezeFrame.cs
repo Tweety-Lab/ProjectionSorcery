@@ -90,7 +90,7 @@ public class FreezeFrame : MonoBehaviour
         if (!manager.IsFrozen)
             manager.Freeze();
 
-        CreateFlatFrame(target);
+        GameObject flat = CreateFlatFrame(target);
 
         target.renderers.ForEach(r => r.renderer.enabled = false);
 
@@ -103,11 +103,19 @@ public class FreezeFrame : MonoBehaviour
         Vector3 forward = Camera.main.transform.forward;
         forward.y = 0;
 
-        transform.rotation = Quaternion.LookRotation(forward) * Quaternion.Euler(0, 90, 0);
-        transform.position = target.Center - Vector3.up * 0.2f;
+        Bounds totalBounds = target.Bounds;
 
-        // Scale to bounds of target
-        transform.localScale = new Vector3(transform.localScale.x, target.Bounds.size.y, target.Bounds.size.x);
+        var heldItems = new[] { target.handLeft, target.handRight }.Where(hand => hand?.grabbedHandle?.item != null).Select(hand => hand.grabbedHandle.item);
+
+        foreach (var item in heldItems)
+            foreach (var r in item.renderers)
+                totalBounds.Encapsulate(r.bounds);
+
+        transform.rotation = Quaternion.LookRotation(forward) * Quaternion.Euler(0, 90, 0);
+        transform.position = new Vector3(totalBounds.center.x, totalBounds.center.y, totalBounds.center.z);
+        transform.localScale = new Vector3(0.03f, totalBounds.size.y, totalBounds.size.x);
+
+        flat.transform.position = transform.position + Vector3.up * 0.25f;
     }
 
     public void UnFreeze(Creature target)
