@@ -10,8 +10,8 @@ public class CreatureFreezeManager : FreezeManager<Creature>
     public bool IsFrozen { get; private set; } = false;
 
     public Ragdoll.State SavedState { get; private set; }
-    public Vector3 SavedVelocity { get; private set; }
-    public Vector3 SavedAngularVelocity { get; private set; }
+    public Dictionary<RagdollPart, Vector3> SavedVelocities { get; private set; } = new();
+    public Dictionary<RagdollPart, Vector3> SavedAngularVelocities { get; private set; } = new();
 
     public Dictionary<PhysicBody, bool> SavedPhysicBodyStates { get; private set; } = new();
 
@@ -45,8 +45,8 @@ public class CreatureFreezeManager : FreezeManager<Creature>
         {
             SavedState = creature.ragdoll.state;
 
-            SavedVelocity = creature.RootPhysicBody.velocity;
-            SavedAngularVelocity = creature.RootPhysicBody.angularVelocity;
+            creature.ragdoll.parts.ForEach(part => SavedVelocities.Add(part, part.physicBody.velocity));
+            creature.ragdoll.parts.ForEach(part => SavedAngularVelocities.Add(part, part.physicBody.angularVelocity));
 
             SavedPhysicBodyStates.Clear();
             SavedPhysicBodyStates = creature.GetPhysicBodiesInChildren().ToDictionary(pb => pb, pb => pb.isEnabled);
@@ -60,8 +60,8 @@ public class CreatureFreezeManager : FreezeManager<Creature>
             foreach (var pb in SavedPhysicBodyStates)
                 pb.Key.isEnabled = pb.Value;
 
-            creature.RootPhysicBody.velocity = SavedVelocity;
-            creature.RootPhysicBody.angularVelocity = SavedAngularVelocity;
+            creature.ragdoll.parts.ForEach(part => part.physicBody.velocity = SavedVelocities[part]);
+            creature.ragdoll.parts.ForEach(part => part.physicBody.angularVelocity = SavedAngularVelocities[part]);
         }
 
         creature.RootPhysicBody.isEnabled = !shouldFreeze;
