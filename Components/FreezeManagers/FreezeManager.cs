@@ -20,6 +20,9 @@ public abstract class FreezeManager<T> : MonoBehaviour, IFreezeManager where T :
     /// <summary> Target object to manage. </summary>
     public T Target { get; set; } = null!;
 
+    /// <summary> Should the object be unfrozen? </summary>
+    public bool ShouldUnfreeze { get; set; } = true;
+
     void Awake() => Target = GetComponent<T>() ?? GetComponentInParent<T>();
 
     /// <inheritdoc/>

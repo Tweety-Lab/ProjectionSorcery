@@ -97,7 +97,7 @@ public class ProjectionSorcerySpell : AbilitySpell
             new ProjectionTimeFreezeAbility(this),
             new ProjectionInteractionAbility(this),
             new ProjectionSoundAbility(this),
-            // new ProjectionFreezeFrameAbility(this)
+            new ProjectionFreezeFrameAbility(this)
         };
     }
 }

@@ -67,7 +67,11 @@ public class ProjectionTimeFreezeAbility : Ability
                 continue;
 
             CreatureFreezeManager freezeManager = creature.GetOrAddComponent<CreatureFreezeManager>();
-            freezeManager.UnFreeze();
+            if (freezeManager.ShouldUnfreeze)
+            {
+                freezeManager.UnFreeze();
+                GameObject.Destroy(freezeManager);
+            }
 
             if (EnemyReactionType != ReactionType.Instant)
             {
@@ -79,16 +83,16 @@ public class ProjectionTimeFreezeAbility : Ability
                 if (EnemyReactionType == ReactionType.LevelDependant)
                     CoroutineRunner.Instance.PlayAfterDelay(() => creature.brain.enabled = true, Mathf.Max(0f, 2f - DetermineStrength(creature)));
             }
-
-            GameObject.Destroy(freezeManager);
         }
 
         foreach (Item item in Item.allActive)
         {
             ItemFreezeManager freezeManager = item.GetOrAddComponent<ItemFreezeManager>();
-            freezeManager.UnFreeze();
-
-            GameObject.Destroy(freezeManager);
+            if (freezeManager.ShouldUnfreeze)
+            {
+                freezeManager.UnFreeze();
+                GameObject.Destroy(freezeManager);
+            }
         }
     }
 

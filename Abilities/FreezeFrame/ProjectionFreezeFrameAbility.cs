@@ -1,6 +1,7 @@
 ﻿using AliLib.Core.Abilities;
 using AliLib.Core.Assets;
 using AliLib.Core.GC;
+using ProjectionSorcery.Abilities.Plotting;
 using ThunderRoad;
 using UnityEngine;
 
@@ -28,10 +29,13 @@ public class ProjectionFreezeFrameAbility : Ability
         if (FreezeFrame == null)
             return;
 
-        foreach (var item in Item.allActive)
+        foreach (var creature in Creature.allActive)
         {
-            GameObject instance = GameObject.Instantiate(FreezeFrame, item.transform.position, item.transform.rotation);
-            instance.GetComponent<Components.FreezeFrame>().Target = item.gameObject;
+            if (creature.isPlayer)
+                continue;
+
+            GameObject instance = GameObject.Instantiate(FreezeFrame, creature.transform.position, Quaternion.identity);
+            instance.GetComponent<Components.FreezeFrame>().Target = creature;
         }
     }
 }

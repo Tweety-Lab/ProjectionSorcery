@@ -7,6 +7,8 @@ namespace ProjectionSorcery.Components.FreezeManagers;
 
 public class CreatureFreezeManager : FreezeManager<Creature>
 {
+    public bool IsFrozen { get; private set; } = false;
+
     public Ragdoll.State SavedState { get; private set; }
     public Vector3 SavedVelocity { get; private set; }
     public Vector3 SavedAngularVelocity { get; private set; }
@@ -20,6 +22,8 @@ public class CreatureFreezeManager : FreezeManager<Creature>
             return;
 
         ToggleFreezeCreature(Target, true);
+
+        IsFrozen = true;
     }
 
     /// <inheritdoc/>
@@ -29,6 +33,8 @@ public class CreatureFreezeManager : FreezeManager<Creature>
             return;
 
         ToggleFreezeCreature(Target, false);
+
+        IsFrozen = false;
     }
 
     public void ToggleFreezeCreature(Creature creature, bool shouldFreeze)
