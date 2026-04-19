@@ -8,11 +8,12 @@
 
 	<PropertyGroup>
 		<ModPath>$(ProjectDir)..\Mods\ProjectionSorcery</ModPath>
+		<AliLibLinkage>dynamic</AliLibLinkage>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AliLib.Analyzer" Version="0.2.4" />
-		<PackageReference Include="AliLib.Core" Version="0.5.1" />
+		<PackageReference Include="AliLib.Analyzer" Version="0.2.6" />
+		<PackageReference Include="AliLib.Core" Version="0.5.2" />
 	</ItemGroup>
 
 	<ItemGroup>
