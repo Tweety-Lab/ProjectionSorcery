@@ -45,7 +45,16 @@ public class ProjectionFreezeFrameAbility : Ability
         if (FreezeFrame == null || FreezeMode != FreezeType.GrabAndTrigger)
             return;
 
-        // Todo
+        // TODO: Test this works
+        if (Spell.spellCaster.ragdollHand.grabbedWithTrigger)
+        {
+            Creature creature = Spell.spellCaster.ragdollHand.grabbedHandle.GetComponentInParent<Creature>();
+            if (creature == null)
+                return;
+
+            GameObject instance = GameObject.Instantiate(FreezeFrame, Spell.spellCaster.ragdollHand.grabbedHandle.item.transform.position, Quaternion.identity);
+            instance.GetComponent<Components.FreezeFrame>().Target = creature;
+        }
     }
 
     public void OnCollideStart(CollisionInstance col)
