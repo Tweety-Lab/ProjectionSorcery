@@ -93,7 +93,7 @@ public class FreezeFrame : MonoBehaviour
         return false;
     }
 
-    /// <summary> Forces the frame to break. <see cref="IsBreakable"/>. </summary>
+    /// <summary> Forces the frame to break, ignoring <see cref="IsBreakable"/>. </summary>
     public void ForceBreak(Vector3 impulse = default)
     {
         IsBreakable = false;
@@ -107,6 +107,7 @@ public class FreezeFrame : MonoBehaviour
         if (ShatteredFrame != null)
         {
             GameObject fractured = Instantiate(ShatteredFrame, transform.position, transform.rotation);
+            fractured.transform.localScale = transform.lossyScale * 0.5f;
 
             List<Transform> shards = new List<Transform>();
             foreach (Transform shard in fractured.transform)
@@ -117,7 +118,6 @@ public class FreezeFrame : MonoBehaviour
             foreach (Transform shard in shards)
             {
                 shard.SetParent(null, true);
-                shard.localScale = Vector3.Scale(shard.localScale, paneRoot.lossyScale);
 
                 Rigidbody rb = shard.GetComponent<Rigidbody>();
                 rb.AddForceAtPosition(-impulse * 0.1f, Target?.Center ?? Vector3.zero, ForceMode.Impulse);
@@ -146,8 +146,6 @@ public class FreezeFrame : MonoBehaviour
         if (!manager.IsFrozen)
             manager.Freeze();
 
-        GameObject flat = CreateFlatFrame(target);
-
         target.renderers.ForEach(r => r.renderer.enabled = false);
 
         target.ragdoll.parts.ForEach(part => part.handles.ForEach(handle => handle.enabled = false));
@@ -168,10 +166,10 @@ public class FreezeFrame : MonoBehaviour
                 totalBounds.Encapsulate(r.bounds);
 
         transform.rotation = Quaternion.LookRotation(forward) * Quaternion.Euler(0, 90, 0);
-        transform.position = new Vector3(totalBounds.center.x, totalBounds.center.y, totalBounds.center.z);
-        transform.localScale = new Vector3(0.03f, totalBounds.size.y, totalBounds.size.x);
+        transform.position = target.RootTransform.position;
+        transform.localScale = new Vector3(0.03f, totalBounds.size.y + 0.1f, totalBounds.size.x);
 
-        flat.transform.position = transform.position + Vector3.up * 0.25f;
+        GameObject flat = CreateFlatFrame(target);
     }
 
     public void UnFreeze(Creature target)
@@ -198,7 +196,7 @@ public class FreezeFrame : MonoBehaviour
         Vector3 forward = Camera.main.transform.forward;
         forward.y = 0;
         root.transform.rotation = Quaternion.LookRotation(forward);
-        root.transform.position = target.Center;
+        root.transform.position = target.RootTransform.position;
 
         void AddToFrame(Mesh mesh, Material[] materials, Transform source)
         {
