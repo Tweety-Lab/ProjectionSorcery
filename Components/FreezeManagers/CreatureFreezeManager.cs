@@ -43,12 +43,14 @@ public class CreatureFreezeManager : FreezeManager<Creature>
 
         if (shouldFreeze)
         {
+            SavedVelocities.Clear();
+            SavedAngularVelocities.Clear();
+
             SavedState = creature.ragdoll.state;
 
             creature.ragdoll.parts.ForEach(part => SavedVelocities.Add(part, part.physicBody.velocity));
             creature.ragdoll.parts.ForEach(part => SavedAngularVelocities.Add(part, part.physicBody.angularVelocity));
 
-            SavedPhysicBodyStates.Clear();
             SavedPhysicBodyStates = creature.GetPhysicBodiesInChildren().ToDictionary(pb => pb, pb => pb.isEnabled);
 
             creature.ragdoll.SetState(Ragdoll.State.Frozen);

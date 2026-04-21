@@ -1,10 +1,14 @@
 ﻿using AliLib.Core;
+using AliLib.Core.Abilities;
 using AliLib.Core.Assets;
 using AliLib.Core.Events;
 using ProjectionSorcery.Components.FreezeManagers;
+using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using ThunderRoad;
 using UnityEngine;
+using static ThunderRoad.FileManager;
 
 namespace ProjectionSorcery.Components;
 
@@ -15,6 +19,19 @@ public class FreezeFrame : MonoBehaviour
     [ModOptionCategory("Freeze Frames", 0)]
     [ModOptionFloatValues(0.5f, 10f, 0.5f)]
     public static float MinimumBreakForce = 3f;
+
+    [ModOption]
+    [ModOptionCategory("Freeze Frames", 0)]
+    [ModOptionFloatValues(0.1f, 5f, 0.1f)]
+    public static float BreakGracePeriod = 0.5f;
+
+    [ModOption]
+    [ModOptionCategory("Freeze Frames", 0)]
+    [ModOptionFloatValues(0.5f, 30f, 0.5f)]
+    public static float AutoBreakTime = 3f;
+
+    [Addressable("ProjectionSorcery.FracturedFreezeFrame")]
+    public static GameObject? ShatteredFrame { get; set; }
 
     [Addressable("ProjectionSorcery.Sounds.GlassSpawn")]
     public static AudioClip? SpawnSound { get; set; }
@@ -53,6 +70,11 @@ public class FreezeFrame : MonoBehaviour
             return;
 
         Audio.PlayNoBlend(SpawnSound, ThunderRoad.AudioMixerName.Effect);
+
+        IsBreakable = false;
+
+        CoroutineRunner.Instance.PlayAfterDelay(() => IsBreakable = true, BreakGracePeriod);
+        CoroutineRunner.Instance.PlayAfterDelay(() => ForceBreak(), AutoBreakTime);
     }
 
     void OnCollisionEnter(Collision collision) => TryBreak(collision.impulse);
@@ -74,11 +96,42 @@ public class FreezeFrame : MonoBehaviour
     /// <summary> Forces the frame to break. <see cref="IsBreakable"/>. </summary>
     public void ForceBreak(Vector3 impulse = default)
     {
+        IsBreakable = false;
+
         if (BreakSound != null)
             Audio.PlayNoBlend(BreakSound, ThunderRoad.AudioMixerName.Effect);
 
         if (Target != null)
             UnFreeze(Target);
+
+        if (ShatteredFrame != null)
+        {
+            GameObject fractured = Instantiate(ShatteredFrame, transform.position, transform.rotation);
+
+            List<Transform> shards = new List<Transform>();
+            foreach (Transform shard in fractured.transform)
+                shards.Add(shard);
+
+            Transform paneRoot = transform;
+
+            foreach (Transform shard in shards)
+            {
+                shard.SetParent(null, true);
+                shard.localScale = Vector3.Scale(shard.localScale, paneRoot.lossyScale);
+
+                Rigidbody rb = shard.GetComponent<Rigidbody>();
+                rb.AddForceAtPosition(-impulse * 0.1f, Target?.Center ?? Vector3.zero, ForceMode.Impulse);
+
+                GameObject shardObj = shard.gameObject;
+
+                CoroutineRunner.Instance.PlayAfterDelay(() => Destroy(shardObj), 3f);
+
+                Vector3 originalSize = shard.localScale;
+                CoroutineRunner.Instance.PlaySmooth(t => shardObj.transform.localScale = Vector3.Lerp(originalSize, Vector3.zero, t), duration: 3f);
+            }
+
+            CoroutineRunner.Instance.PlayAfterDelay(() => Destroy(fractured), 3f);
+        }
 
         OnFrameBroken.Invoke();
 
