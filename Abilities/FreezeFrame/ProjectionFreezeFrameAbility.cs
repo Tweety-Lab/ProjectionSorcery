@@ -40,21 +40,29 @@ public class ProjectionFreezeFrameAbility : Ability
     /// <inheritdoc/>
     public override void OnUnequip() => Spell.spellCaster.ragdollHand.collisionHandler.OnCollisionStartEvent -= OnCollideStart;
 
+    bool lastTrigger = false;
     public void OnUpdateCast()
     {
         if (FreezeFrame == null || FreezeMode != FreezeType.GrabAndTrigger)
             return;
 
-        // TODO: Test this works
-        if (Spell.spellCaster.ragdollHand.grabbedWithTrigger)
-        {
-            Creature creature = Spell.spellCaster.ragdollHand.grabbedHandle.GetComponentInParent<Creature>();
-            if (creature == null)
-                return;
+        bool triggerPressed = Spell.spellCaster.ragdollHand.playerHand.controlHand.usePressed;
 
-            GameObject instance = GameObject.Instantiate(FreezeFrame, Spell.spellCaster.ragdollHand.grabbedHandle.item.transform.position, Quaternion.identity);
-            instance.GetComponent<Components.FreezeFrame>().Target = creature;
+        if (triggerPressed && !lastTrigger)
+        {
+            var grabbedHandle = Spell.spellCaster.ragdollHand.grabbedHandle;
+            if (grabbedHandle != null)
+            {
+                Creature creature = grabbedHandle.GetComponentInParent<Creature>();
+                if (creature != null)
+                {
+                    GameObject instance = GameObject.Instantiate(FreezeFrame, grabbedHandle.item.transform.position, Quaternion.identity);
+                    instance.GetComponent<Components.FreezeFrame>().Target = creature;
+                }
+            }
         }
+
+        lastTrigger = triggerPressed;
     }
 
     public void OnCollideStart(CollisionInstance col)
