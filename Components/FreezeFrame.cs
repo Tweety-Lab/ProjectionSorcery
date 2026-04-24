@@ -124,7 +124,7 @@ public class FreezeFrame : MonoBehaviour
 
                 GameObject shardObj = shard.gameObject;
 
-                CoroutineRunner.Instance.PlayAfterDelay(() => Destroy(shardObj), 3f);
+                CoroutineRunner.Instance.PlayAfterDelay(() => Destroy(shardObj), 3.1f);
 
                 Vector3 originalSize = shard.localScale;
                 CoroutineRunner.Instance.PlaySmooth(t => shardObj.transform.localScale = Vector3.Lerp(originalSize, Vector3.zero, t), duration: 3f);

@@ -2,6 +2,7 @@
 using AliLib.Core.Assets;
 using AliLib.Core.GC;
 using ProjectionSorcery.Abilities.Plotting;
+using System.Collections.Generic;
 using ThunderRoad;
 using UnityEngine;
 
@@ -22,6 +23,8 @@ public class ProjectionFreezeFrameAbility : Ability
 
     [Addressable("ProjectionSorcery.FreezeFrame")]
     public static GameObject? FreezeFrame { get; private set; }
+
+    public HashSet<Creature> FrozenCreatures { get; private set; } = new HashSet<Creature>();
 
     /// <inheritdoc/>
     public ProjectionFreezeFrameAbility(AbilitySpell spell) : base(spell) { }
@@ -54,10 +57,12 @@ public class ProjectionFreezeFrameAbility : Ability
             if (grabbedHandle != null)
             {
                 Creature creature = grabbedHandle.GetComponentInParent<Creature>();
-                if (creature != null)
+                if (creature != null && !FrozenCreatures.Contains(creature))
                 {
                     GameObject instance = GameObject.Instantiate(FreezeFrame, grabbedHandle.item.transform.position, Quaternion.identity);
                     instance.GetComponent<Components.FreezeFrame>().Target = creature;
+                    instance.GetComponent<Components.FreezeFrame>().OnFrameBroken += () => FrozenCreatures.Remove(creature);
+                    FrozenCreatures.Add(creature);
                     Spell.spellCaster.ragdollHand.TryRelease();
                 }
             }
@@ -76,8 +81,13 @@ public class ProjectionFreezeFrameAbility : Ability
 
         if (col.targetCollider.transform.root.TryGetComponent<Creature>(out var creature))
         {
+            if (FrozenCreatures.Contains(creature))
+                return;
+
             GameObject instance = GameObject.Instantiate(FreezeFrame, creature.transform.position, Quaternion.identity);
             instance.GetComponent<Components.FreezeFrame>().Target = creature;
+            instance.GetComponent<Components.FreezeFrame>().OnFrameBroken += () => FrozenCreatures.Remove(creature);
+            FrozenCreatures.Add(creature);
         }
     }
 }
