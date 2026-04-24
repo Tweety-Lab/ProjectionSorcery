@@ -70,6 +70,9 @@ public class ProjectionFreezeFrameAbility : Ability
         if (FreezeFrame == null || FreezeMode != FreezeType.Collision)
             return;
 
+        if (Spell.spellCaster.ragdollHand.controlPose == RagdollHand.ControlPose.Fist)
+            return;
+
         if (col.targetCollider.transform.root.TryGetComponent<Creature>(out var creature))
         {
             GameObject instance = GameObject.Instantiate(FreezeFrame, creature.transform.position, Quaternion.identity);
