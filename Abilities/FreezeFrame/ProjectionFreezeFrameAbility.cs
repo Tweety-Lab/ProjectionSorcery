@@ -58,6 +58,7 @@ public class ProjectionFreezeFrameAbility : Ability
                 {
                     GameObject instance = GameObject.Instantiate(FreezeFrame, grabbedHandle.item.transform.position, Quaternion.identity);
                     instance.GetComponent<Components.FreezeFrame>().Target = creature;
+                    Spell.spellCaster.ragdollHand.TryRelease();
                 }
             }
         }
