@@ -54,6 +54,9 @@ public class CreatureFreezeManager : FreezeManager<Creature>
             SavedPhysicBodyStates = creature.GetPhysicBodiesInChildren().ToDictionary(pb => pb, pb => pb.isEnabled);
 
             creature.ragdoll.SetState(Ragdoll.State.Frozen);
+
+            foreach (var pb in creature.GetPhysicBodiesInChildren())
+                pb.isEnabled = false;
         }
         else
         {
@@ -64,6 +67,10 @@ public class CreatureFreezeManager : FreezeManager<Creature>
 
             creature.ragdoll.parts.ForEach(part => part.physicBody.velocity = SavedVelocities[part]);
             creature.ragdoll.parts.ForEach(part => part.physicBody.angularVelocity = SavedAngularVelocities[part]);
+
+            foreach (var pb in creature.GetPhysicBodiesInChildren())
+                if (SavedPhysicBodyStates.TryGetValue(pb, out var state))
+                    pb.isEnabled = state;
         }
 
         creature.RootPhysicBody.isEnabled = !shouldFreeze;
