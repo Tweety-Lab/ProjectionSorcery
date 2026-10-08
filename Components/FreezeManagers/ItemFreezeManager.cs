@@ -8,14 +8,14 @@ namespace ProjectionSorcery.Components.FreezeManagers;
 
 public class ItemFreezeManager : FreezeManager<Item>
 {
-    public bool IsFrozen { get; private set; } = false;
-
     public Vector3 SavedVelocity { get; set; }
     public Vector3 SavedAngularVelocity { get; set; }
 
     /// <inheritdoc/>
     public override void Freeze()
     {
+        base.Freeze();
+
         if (Target.physicBody.isKinematic)
             return;
 
@@ -31,24 +31,19 @@ public class ItemFreezeManager : FreezeManager<Item>
 
         Target.physicBody.isEnabled = false;
         Target.breakable?.canBreak = false;
-
-        IsFrozen = true;
     }
 
     /// <inheritdoc/>
     public override void UnFreeze()
     {
+        base.UnFreeze();
+
         Target.OnHandleReleaseEvent -= OnHandleRelease;
 
-        if (IsFrozen)
-        {
-            Target.physicBody.isEnabled = true;
-            Target.physicBody.velocity = SavedVelocity;
-            Target.physicBody.angularVelocity = SavedAngularVelocity;
-            Target.breakable?.canBreak = true;
-
-            IsFrozen = false;
-        }
+        Target.physicBody.isEnabled = true;
+        Target.physicBody.velocity = SavedVelocity;
+        Target.physicBody.angularVelocity = SavedAngularVelocity;
+        Target.breakable?.canBreak = true;
     }
 
     public void OnHandleRelease(Handle handle, RagdollHand hand, bool _)
