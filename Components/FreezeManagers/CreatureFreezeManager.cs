@@ -21,6 +21,9 @@ public class CreatureFreezeManager : FreezeManager<Creature>
         if (Target.isPlayer)
             return;
 
+        if (IsFrozen)
+            return;
+
         ToggleFreezeCreature(Target, true);
 
         IsFrozen = true;
@@ -32,9 +35,13 @@ public class CreatureFreezeManager : FreezeManager<Creature>
         if (Target.isPlayer)
             return;
 
+        if (!IsFrozen)
+            return;
+
         ToggleFreezeCreature(Target, false);
 
         IsFrozen = false;
+        ShouldUnfreeze = true;
     }
 
     public void ToggleFreezeCreature(Creature creature, bool shouldFreeze)

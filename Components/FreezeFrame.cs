@@ -1,14 +1,11 @@
 ﻿using AliLib.Core;
-using AliLib.Core.Abilities;
 using AliLib.Core.Assets;
 using AliLib.Core.Events;
 using ProjectionSorcery.Components.FreezeManagers;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using ThunderRoad;
 using UnityEngine;
-using static ThunderRoad.FileManager;
 
 namespace ProjectionSorcery.Components;
 
@@ -66,6 +63,9 @@ public class FreezeFrame : MonoBehaviour
 
     void Start()
     {
+        if (GetComponents<FreezeFrame>().Length > 1)
+            Destroy(this);
+
         if (SpawnSound == null)
             return;
 

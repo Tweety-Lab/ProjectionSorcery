@@ -72,7 +72,6 @@ public class ProjectionAbility : Ability
             if (PlottedFrames.Count > VelocityStackingGracePeriod)
                 return;
 
-            Debug.Log("Launching Player");
             PlottedFrame lastFrame = PlottedFrames.Last.Value;
             PlottedFrame? secondLastFrame = PlottedFrames.Last.Previous?.Value;
 
