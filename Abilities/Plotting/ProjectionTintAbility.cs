@@ -22,13 +22,13 @@ public class ProjectionTintAbility : Ability
     [ModOption(interactionType = ModOption.InteractionType.Slider)]
     [ModOptionCategory("Effects", 1)]
     [ModOptionFloatValues(0f, 1f, 0.05f)]
-    public static float PlottingColorB = 0.7f;
+    public static float PlottingColorB = 0.8f;
 
     /// <summary> The color to tint the screen when in Hack Mode. </summary>
     public static Color PlottingModeColor => new Color(PlottingColorR, PlottingColorG, PlottingColorB);
 
     /// <summary> The Post Process Volume effects are applied to. </summary>
-    public Volume PostProcessVolume { get; set; }
+    public Volume? PostProcessVolume { get; set; }
 
     /// <inheritdoc/>
     public ProjectionTintAbility(AbilitySpell spell) : base(spell) { }
@@ -59,6 +59,9 @@ public class ProjectionTintAbility : Ability
     /// <summary> Tints the screen to <see cref="PlottingModeColor"/>. </summary>
     public void TintScreen()
     {
+        if (PostProcessVolume == null)
+            return;
+
         if (!PostProcessVolume.profile.TryGet(out ColorAdjustments colorAdjustments))
             colorAdjustments = PostProcessVolume.profile.Add<ColorAdjustments>(true);
 
@@ -73,6 +76,9 @@ public class ProjectionTintAbility : Ability
     /// <summary> Untints the screen. </summary>
     public void UnTintScreen()
     {
+        if (PostProcessVolume == null)
+            return;
+
         if (PostProcessVolume.profile.TryGet(out ColorAdjustments colorAdjustments))
         {
             if (plotTintCoroutine != null)
