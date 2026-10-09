@@ -50,6 +50,7 @@ public class FreezeFrame : MonoBehaviour
     public bool TickAutoBreak { get; set; } = true;
 
     private float breakTime = 0;
+    private Coroutine? breakCoroutine;
 
     /// <summary> The creature that is frozen. </summary>
     public Creature? Target
@@ -70,7 +71,10 @@ public class FreezeFrame : MonoBehaviour
     void Start()
     {
         if (GetComponents<FreezeFrame>().Length > 1)
+        {
             Destroy(this);
+            return;
+        }
 
         if (SpawnSound == null)
             return;
@@ -80,7 +84,7 @@ public class FreezeFrame : MonoBehaviour
         IsBreakable = false;
 
         CoroutineRunner.Instance.PlayAfterDelay(() => IsBreakable = true, BreakGracePeriod);
-        CoroutineRunner.Instance.StartCoroutine(TickBreak());
+        breakCoroutine = CoroutineRunner.Instance.StartCoroutine(TickBreak());
     }
 
     void OnCollisionEnter(Collision collision) => TryBreak(collision.impulse);
@@ -122,6 +126,12 @@ public class FreezeFrame : MonoBehaviour
     public void ForceBreak(Vector3 impulse = default)
     {
         IsBreakable = false;
+
+        if (breakCoroutine != null)
+        {
+            CoroutineRunner.Instance.StopCoroutine(breakCoroutine);
+            breakCoroutine = null;
+        }
 
         if (BreakSound != null)
             Audio.PlayNoBlend(BreakSound, ThunderRoad.AudioMixerName.Effect);
