@@ -2,6 +2,7 @@
 using AliLib.Core.Assets;
 using AliLib.Core.Events;
 using ProjectionSorcery.Components.FreezeManagers;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using ThunderRoad;
@@ -45,6 +46,11 @@ public class FreezeFrame : MonoBehaviour
     /// <summary> Is the frame currently breakable? </summary>
     public bool IsBreakable { get; set; } = true;
 
+    /// <summary> Should the frame be counting down to auto break? </summary>
+    public bool TickAutoBreak { get; set; } = true;
+
+    private float breakTime = 0;
+
     /// <summary> The creature that is frozen. </summary>
     public Creature? Target
     {
@@ -74,11 +80,30 @@ public class FreezeFrame : MonoBehaviour
         IsBreakable = false;
 
         CoroutineRunner.Instance.PlayAfterDelay(() => IsBreakable = true, BreakGracePeriod);
-        CoroutineRunner.Instance.PlayAfterDelay(() => ForceBreak(), AutoBreakTime);
+        CoroutineRunner.Instance.StartCoroutine(TickBreak());
     }
 
     void OnCollisionEnter(Collision collision) => TryBreak(collision.impulse);
-    
+
+    public IEnumerator TickBreak()
+    {
+        while (true)
+        {
+            if (TickAutoBreak)
+            {
+                breakTime += Time.deltaTime;
+
+                if (breakTime >= AutoBreakTime)
+                {
+                    ForceBreak();
+                    yield break;
+                }
+            }
+
+            yield return null;
+        }
+    }
+
     /// <summary> Tries to break the frame. </summary>
     /// <param name="impulse"> The impulse. </param>
     /// <returns> True if the frame was broken. </returns>

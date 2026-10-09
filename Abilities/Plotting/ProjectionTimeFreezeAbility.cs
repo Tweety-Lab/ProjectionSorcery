@@ -54,6 +54,12 @@ public class ProjectionTimeFreezeAbility : Ability
             ItemFreezeManager freezeManager = item.GetOrAddComponent<ItemFreezeManager>();
             freezeManager.Freeze();
         }
+
+        foreach (Components.FreezeFrame freezeFrame in GameObject.FindObjectsOfType<Components.FreezeFrame>())
+        {
+            FreezeFrameFreezeManager freezeManager = freezeFrame.GetOrAddComponent<FreezeFrameFreezeManager>();
+            freezeManager.Freeze();
+        }
     }
 
     public void OnExitPlotting()
@@ -88,6 +94,16 @@ public class ProjectionTimeFreezeAbility : Ability
         foreach (Item item in Item.allActive)
         {
             ItemFreezeManager freezeManager = item.GetOrAddComponent<ItemFreezeManager>();
+            if (freezeManager.ShouldUnfreeze)
+            {
+                freezeManager.UnFreeze();
+                GameObject.Destroy(freezeManager);
+            }
+        }
+
+        foreach (Components.FreezeFrame freezeFrame in GameObject.FindObjectsOfType<Components.FreezeFrame>())
+        {
+            FreezeFrameFreezeManager freezeManager = freezeFrame.GetOrAddComponent<FreezeFrameFreezeManager>();
             if (freezeManager.ShouldUnfreeze)
             {
                 freezeManager.UnFreeze();
