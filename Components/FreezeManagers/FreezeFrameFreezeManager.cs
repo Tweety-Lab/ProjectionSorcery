@@ -4,8 +4,16 @@
 public class FreezeFrameFreezeManager : FreezeManager<FreezeFrame>
 {
     /// <inheritdoc/>
-    public override void Freeze() => Target.TickAutoBreak = false;
+    public override void Freeze()
+    {
+        Target.IsBreakable = false;
+        Target.TickAutoBreak = false;
+    }
 
     /// <inheritdoc/>
-    public override void UnFreeze() => Target.TickAutoBreak = true;
+    public override void UnFreeze()
+    {
+        Target.IsBreakable = true;
+        Target.TickAutoBreak = true;
+    }
 }
