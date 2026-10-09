@@ -183,8 +183,6 @@ public class FreezeFrame : MonoBehaviour
 
         target.renderers.ForEach(r => r.renderer.enabled = false);
 
-        target.ragdoll.parts.ForEach(part => part.handles.ForEach(handle => handle.enabled = false));
-
         target.ragdoll.SetColliders(false);
         target.ragdoll.ForBothHands(hand => hand.grabbedHandle?.item.colliderGroups.ForEach(col => col.colliders.ForEach(col => col.enabled = false)));
         target.ragdoll.ForBothHands(hand => hand.grabbedHandle?.item.renderers.ForEach(r => r.enabled = false));
@@ -210,8 +208,6 @@ public class FreezeFrame : MonoBehaviour
     public void UnFreeze(Creature target)
     {
         target.renderers.ForEach(r => r.renderer.enabled = true);
-
-        target.ragdoll.parts.ForEach(part => part.handles.ForEach(handle => handle.enabled = true));
 
         target.ragdoll.SetColliders(true);
         target.ragdoll.ForBothHands(hand => hand.grabbedHandle?.item.colliderGroups.ForEach(col => col.colliders.ForEach(col => col.enabled = true)));
