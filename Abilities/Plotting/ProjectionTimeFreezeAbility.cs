@@ -13,8 +13,8 @@ public class ProjectionTimeFreezeAbility : Ability
 {
     public enum ReactionType
     {
-        Instant,
         Delayed,
+        Instant,
         LevelDependant
     }
 
@@ -22,9 +22,14 @@ public class ProjectionTimeFreezeAbility : Ability
     [ModOptionCategory("Plotting", 0)]
     public static bool FreezeTime = true;
 
-    [ModOption(tooltip = "Determines how fast creatures react to Projection Sorecry users.\n\nInstant: Creatures react as soon as playback ends.\nDelayed: Creatures react after a short delay.\nLevelDependant: The stronger the creature the faster they react.")]
+    [ModOption(tooltip = "Determines how fast creatures react to Projection Sorecry users.\n\nInstant: Creatures react as soon as playback ends.\nDelayed: Creatures react after a delay defined by Enemy Reaction Delay.\nLevelDependant: The stronger the creature the faster they react.")]
     [ModOptionCategory("Plotting", 0)]
     public static ReactionType EnemyReactionType = ReactionType.Instant;
+
+    [ModOption]
+    [ModOptionCategory("Plotting", 0)]
+    [ModOptionFloatValues(0.1f, 5f, 0.1f)]
+    public static float EnemyReactionDelay = 0.3f;
 
     /// <inheritdoc/>
     public ProjectionTimeFreezeAbility(AbilitySpell spell) : base(spell) { }
@@ -84,7 +89,7 @@ public class ProjectionTimeFreezeAbility : Ability
                 creature.brain.enabled = false;
 
                 if (EnemyReactionType == ReactionType.Delayed)
-                    CoroutineRunner.Instance.PlayAfterDelay(() => creature.brain.enabled = true, 0.5f);
+                    CoroutineRunner.Instance.PlayAfterDelay(() => creature.brain.enabled = true, EnemyReactionDelay);
 
                 if (EnemyReactionType == ReactionType.LevelDependant)
                     CoroutineRunner.Instance.PlayAfterDelay(() => creature.brain.enabled = true, Mathf.Max(0f, 2f - DetermineStrength(creature)));
