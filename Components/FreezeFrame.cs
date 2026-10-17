@@ -44,7 +44,7 @@ public class FreezeFrame : MonoBehaviour
     public ModEvent OnFrameBroken { get; set; } = new ModEvent();
 
     /// <summary> Is the frame currently breakable? </summary>
-    public bool IsBreakable { get; set; } = true;
+    public bool IsBreakable { get; set; } = false;
 
     /// <summary> Should the frame be counting down to auto break? </summary>
     public bool TickAutoBreak { get; set; } = true;
@@ -80,8 +80,6 @@ public class FreezeFrame : MonoBehaviour
             return;
 
         Audio.PlayNoBlend(SpawnSound, ThunderRoad.AudioMixerName.Effect);
-
-        IsBreakable = false;
 
         CoroutineRunner.Instance.PlayAfterDelay(() => IsBreakable = true, BreakGracePeriod);
         breakCoroutine = CoroutineRunner.Instance.StartCoroutine(TickBreak());

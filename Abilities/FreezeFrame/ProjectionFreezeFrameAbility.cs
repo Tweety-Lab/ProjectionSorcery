@@ -1,5 +1,6 @@
 ﻿using AliLib.Core.Abilities;
 using AliLib.Core.Assets;
+using AliLib.Core;
 using AliLib.Core.GC;
 using ProjectionSorcery.Abilities.Plotting;
 using System.Collections.Generic;
@@ -19,12 +20,28 @@ public class ProjectionFreezeFrameAbility : Ability
 
     [ModOption]
     [ModOptionCategory("Freeze Frames", 0)]
-    public static FreezeType FreezeMode { get; set; }
+    public static FreezeType FreezeMode;
+
+    [ModOption(tooltip = "The amount of time before a creature just broken out of a freeze frame can be refrozen.")]
+    [ModOptionCategory("Freeze Frames", 0)]
+    [ModOptionFloatValues(0.1f, 5f, 0.1f)]
+    public static float RefreezeGracePeriod = 0.5f;
 
     [Addressable("ProjectionSorcery.FreezeFrame")]
-    public static GameObject? FreezeFrame { get; private set; }
+    public static GameObject? FreezeFrame { get; set; }
 
-    public HashSet<Creature> FrozenCreatures { get; private set; } = new HashSet<Creature>();
+    /// <summary> The creatures that are currently frozen. </summary>
+    public HashSet<Creature> FrozenCreatures { get; } = new HashSet<Creature>();
+
+    /// <summary> The creatures that have been frozen within the last <see cref="RefreezeGracePeriod"/> seconds. </summary>
+    public HashSet<Creature> RecentlyFrozenCreatures { get; } = new HashSet<Creature>();
+
+    private void OnFrameBroken(Creature creature)
+    {
+        FrozenCreatures.Remove(creature);
+        RecentlyFrozenCreatures.Add(creature);
+        CoroutineRunner.Instance.PlayAfterDelay(() => RecentlyFrozenCreatures.Remove(creature), RefreezeGracePeriod);
+    }
 
     /// <inheritdoc/>
     public ProjectionFreezeFrameAbility(AbilitySpell spell) : base(spell) { }
@@ -57,11 +74,11 @@ public class ProjectionFreezeFrameAbility : Ability
             if (grabbedHandle != null)
             {
                 Creature creature = grabbedHandle.GetComponentInParent<Creature>();
-                if (creature != null && !FrozenCreatures.Contains(creature))
+                if (creature != null && !FrozenCreatures.Contains(creature) && !RecentlyFrozenCreatures.Contains(creature))
                 {
                     GameObject instance = GameObject.Instantiate(FreezeFrame, grabbedHandle.item.transform.position, Quaternion.identity);
                     instance.GetComponent<Components.FreezeFrame>().Target = creature;
-                    instance.GetComponent<Components.FreezeFrame>().OnFrameBroken += () => FrozenCreatures.Remove(creature);
+                    instance.GetComponent<Components.FreezeFrame>().OnFrameBroken += () => OnFrameBroken(creature);
                     FrozenCreatures.Add(creature);
                     Spell.spellCaster.ragdollHand.TryRelease();
                 }
@@ -81,12 +98,12 @@ public class ProjectionFreezeFrameAbility : Ability
 
         if (col.targetCollider.transform.root.TryGetComponent<Creature>(out var creature))
         {
-            if (FrozenCreatures.Contains(creature))
+            if (FrozenCreatures.Contains(creature) || RecentlyFrozenCreatures.Contains(creature))
                 return;
 
             GameObject instance = GameObject.Instantiate(FreezeFrame, creature.transform.position, Quaternion.identity);
             instance.GetComponent<Components.FreezeFrame>().Target = creature;
-            instance.GetComponent<Components.FreezeFrame>().OnFrameBroken += () => FrozenCreatures.Remove(creature);
+            instance.GetComponent<Components.FreezeFrame>().OnFrameBroken += () => OnFrameBroken(creature);
             FrozenCreatures.Add(creature);
         }
     }
