@@ -35,6 +35,9 @@ public class ProjectionAbility : Ability
     /// <summary> Called when the casting creature has exited plotting mode. </summary>
     public ModEvent OnExitPlotting { get; set; } = new ModEvent();
 
+    /// <summary> Called when the casting creature has completely finished playback. </summary>
+    public ModEvent OnPlaybackFinish { get; set; } = new ModEvent();
+
     /// <summary> Called when the casting creature has entered a plotted frame during playback. </summary>
     public ModEvent<PlottedFrame> OnPlaybackTick { get; set; } = new ModEvent<PlottedFrame>();
 
@@ -150,6 +153,8 @@ public class ProjectionAbility : Ability
             PlottedFrames.Remove(frame);
             yield return new WaitForSeconds(1f / FramesPerSecond);
         }
+
+        OnPlaybackFinish.Invoke();
     }
 
     /// <summary> Called once per frame plot. </summary>
