@@ -76,7 +76,7 @@ public class ProjectionFreezeFrameAbility : Ability
         if (FreezeFrame == null || FreezeMode != FreezeType.Collision)
             return;
 
-        if (Spell.spellCaster.ragdollHand.controlPose == RagdollHand.ControlPose.Fist)
+        if (Spell.spellCaster.ragdollHand.playerHand.controlHand.gripPressed)
             return;
 
         if (col.targetCollider.transform.root.TryGetComponent<Creature>(out var creature))

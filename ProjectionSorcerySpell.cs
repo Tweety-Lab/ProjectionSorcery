@@ -100,7 +100,4 @@ public class ProjectionSorcerySpell : AbilitySpell
             new ProjectionFreezeFrameAbility(this)
         };
     }
-
-    /// <inheritdoc />
-    public override void UpdateCaster() { }
 }
