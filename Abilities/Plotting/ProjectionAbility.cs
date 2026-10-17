@@ -78,7 +78,7 @@ public class ProjectionAbility : Ability
             Vector3 launchDir = default;
 
             if (secondLastFrame != null)
-                launchDir = (lastFrame.RootPosition - secondLastFrame.RootPosition).normalized;
+                launchDir = (lastFrame.RootPosition - secondLastFrame.Value.RootPosition).normalized;
             else
                 launchDir = lastFrame.RootRotation * Vector3.forward;
 
@@ -173,7 +173,7 @@ public class ProjectionAbility : Ability
 /// <summary>
 /// Data representation of a plotted frame point.
 /// </summary>
-public class PlottedFrame
+public struct PlottedFrame
 {
     public struct Hand
     {
@@ -189,7 +189,7 @@ public class PlottedFrame
         public Vector3 Velocity { get; set; }
     }
 
-    /// <summary> Initializes a new instance of the <see cref="PlottedFrame"/> class. </summary>
+    /// <summary> Initializes a new instance of the <see cref="PlottedFrame"/> struct. </summary>
     public PlottedFrame(Vector3 rootPos, Quaternion rootRot, Hand leftHand, Hand rightHand)
     {
         RootPosition = rootPos;
