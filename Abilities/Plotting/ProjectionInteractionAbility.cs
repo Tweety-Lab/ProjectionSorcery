@@ -33,8 +33,7 @@ public class ProjectionInteractionAbility : Ability
         base.Init();
 
         Spell.GetAbility<ProjectionAbility>()?.OnEnterPlotting += OnEnterPlotting;
-        Spell.GetAbility<ProjectionAbility>()?.OnExitPlotting += OnExitPlotting;
-
+        Spell.GetAbility<ProjectionAbility>()?.OnPlaybackFinish += OnPlaybackFinish;
         Spell.GetAbility<ProjectionAbility>()?.OnPlaybackTick += OnPlaybackTick;
     }
 
@@ -50,7 +49,7 @@ public class ProjectionInteractionAbility : Ability
         });
     }
 
-    public void OnExitPlotting()
+    public void OnPlaybackFinish()
     {
         if (InteractionMode == InteractionType.DuringPlotting)
             return;
