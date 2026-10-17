@@ -1,8 +1,6 @@
 ﻿using AliLib.Core.Abilities;
 using AliLib.Core.Assets;
 using AliLib.Core;
-using AliLib.Core.GC;
-using ProjectionSorcery.Abilities.Plotting;
 using System.Collections.Generic;
 using ThunderRoad;
 using UnityEngine;
