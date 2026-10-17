@@ -1,6 +1,7 @@
 ﻿using AliLib.Core;
 using AliLib.Core.Abilities;
 using ProjectionSorcery.Components.FreezeManagers;
+using System.Collections.Generic;
 using ThunderRoad;
 using UnityEngine;
 
@@ -15,6 +16,7 @@ public class ProjectionTimeFreezeAbility : Ability
     {
         Delayed,
         Instant,
+        AfterPlayback,
         LevelDependant
     }
 
@@ -22,7 +24,7 @@ public class ProjectionTimeFreezeAbility : Ability
     [ModOptionCategory("Plotting", 0)]
     public static bool FreezeTime = true;
 
-    [ModOption(tooltip = "Determines how fast creatures react to Projection Sorecry users.\n\nInstant: Creatures react as soon as playback ends.\nDelayed: Creatures react after a delay defined by Enemy Reaction Delay.\nLevelDependant: The stronger the creature the faster they react.")]
+    [ModOption(tooltip = "Determines how fast creatures react to Projection Sorecry users.\n\nDelayed: Creatures react after a delay defined by Enemy Reaction Delay.\nInstant: Creatures react as soon as plotting ends.\nAfter Playback: Creatures react as soon as playback ends.\nLevel Dependant: The stronger the creature the faster they react (roughly).")]
     [ModOptionCategory("Plotting", 0)]
     public static ReactionType EnemyReactionType = ReactionType.Instant;
 
@@ -30,6 +32,8 @@ public class ProjectionTimeFreezeAbility : Ability
     [ModOptionCategory("Plotting", 0)]
     [ModOptionFloatValues(0.1f, 5f, 0.1f)]
     public static float EnemyReactionDelay = 0.3f;
+
+    private HashSet<Creature> awaitingPlaybackReaction = new HashSet<Creature>();
 
     /// <inheritdoc/>
     public ProjectionTimeFreezeAbility(AbilitySpell spell) : base(spell) { }
@@ -41,6 +45,15 @@ public class ProjectionTimeFreezeAbility : Ability
 
         Spell.GetAbility<ProjectionAbility>()?.OnEnterPlotting += OnEnterPlotting;
         Spell.GetAbility<ProjectionAbility>()?.OnExitPlotting += OnExitPlotting;
+        Spell.GetAbility<ProjectionAbility>()?.OnPlaybackFinish += OnPlaybackFinish;
+    }
+
+    public void OnPlaybackFinish()
+    {
+        foreach (Creature creature in awaitingPlaybackReaction)
+            creature.brain.enabled = true;
+
+        awaitingPlaybackReaction.Clear();
     }
 
     public void OnEnterPlotting()
@@ -93,6 +106,9 @@ public class ProjectionTimeFreezeAbility : Ability
 
                 if (EnemyReactionType == ReactionType.LevelDependant)
                     CoroutineRunner.Instance.PlayAfterDelay(() => creature.brain.enabled = true, Mathf.Max(0f, 2f - DetermineStrength(creature)));
+
+                if (EnemyReactionType == ReactionType.AfterPlayback)
+                    awaitingPlaybackReaction.Add(creature);
             }
         }
 

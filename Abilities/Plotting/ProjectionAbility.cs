@@ -124,9 +124,9 @@ public class ProjectionAbility : Ability
             CoroutineRunner.Instance.PlayAfterYield(() => Spell.OnStopCast -= StopCast, new WaitForEndOfFrame());
 
             CoroutineRunner.Instance.StopCoroutine(plotting);
-            StartPlayback();
 
             OnExitPlotting.Invoke();
+            StartPlayback();
         }
 
         Spell.OnStopCast += StopCast;
