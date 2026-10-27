@@ -38,7 +38,7 @@ public class ProjectionSorcerySpell : AbilitySpell
           "allowStaffBuff": false,
           "grabbedFireMaxCharge": 0.0,
           "endOnGrip": false,
-          "allowCharge": true,
+          "allowCharge": false,
           "chargeMinHaptic": 0.0,
           "chargeMaxHaptic": 0.0,
           "handSpringMultiplier": 1.0,
