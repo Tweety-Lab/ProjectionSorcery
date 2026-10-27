@@ -58,32 +58,46 @@ public class ProjectionFreezeFrameAbility : Ability
     /// <inheritdoc/>
     public override void OnUnequip() => Spell.spellCaster.ragdollHand.collisionHandler.OnCollisionStartEvent -= OnCollideStart;
 
-    bool lastTrigger = false;
+    private readonly Dictionary<RagdollHand, bool> lastTriggers = new Dictionary<RagdollHand, bool>();
+
     public void OnUpdateCast()
     {
-        if (FreezeFrame == null || FreezeMode != FreezeType.GrabAndTrigger)
+        if (FreezeMode != FreezeType.GrabAndTrigger)
             return;
 
-        bool triggerPressed = Spell.spellCaster.ragdollHand.playerHand.controlHand.usePressed;
+        // This is kinda hacky but AliLib quirks means we have to manually handle multi-hand states
+        UpdateGrabAndTrigger(Spell.spellCaster.ragdollHand.creature.handLeft);
+        UpdateGrabAndTrigger(Spell.spellCaster.ragdollHand.creature.handRight);
+    }
 
-        if (triggerPressed && !lastTrigger)
+    private void UpdateGrabAndTrigger(RagdollHand hand)
+    {
+        if (hand.caster.spellInstance is not ProjectionSorcerySpell)
         {
-            var grabbedHandle = Spell.spellCaster.ragdollHand.grabbedHandle;
-            if (grabbedHandle != null)
-            {
-                Creature creature = grabbedHandle.GetComponentInParent<Creature>();
-                if (creature != null && !FrozenCreatures.Contains(creature) && !RecentlyFrozenCreatures.Contains(creature))
-                {
-                    GameObject instance = GameObject.Instantiate(FreezeFrame, grabbedHandle.item.transform.position, Quaternion.identity);
-                    instance.GetComponent<Components.FreezeFrame>().Target = creature;
-                    instance.GetComponent<Components.FreezeFrame>().OnFrameBroken += () => OnFrameBroken(creature);
-                    FrozenCreatures.Add(creature);
-                    Spell.spellCaster.ragdollHand.TryRelease();
-                }
-            }
+            lastTriggers.Remove(hand);
+            return;
         }
 
-        lastTrigger = triggerPressed;
+        bool triggerPressed = hand.playerHand.controlHand.usePressed;
+        lastTriggers.TryGetValue(hand, out bool lastTrigger);
+        lastTriggers[hand] = triggerPressed;
+
+        if (FreezeFrame != null && triggerPressed && !lastTrigger)
+        {
+            var grabbedHandle = hand.grabbedHandle;
+            if (grabbedHandle == null)
+                return;
+
+            Creature creature = grabbedHandle.GetComponentInParent<Creature>();
+            if (creature != null && !FrozenCreatures.Contains(creature) && !RecentlyFrozenCreatures.Contains(creature))
+            {
+                GameObject instance = GameObject.Instantiate(FreezeFrame, grabbedHandle.transform.position, Quaternion.identity);
+                instance.GetComponent<Components.FreezeFrame>().Target = creature;
+                instance.GetComponent<Components.FreezeFrame>().OnFrameBroken += () => OnFrameBroken(creature);
+                FrozenCreatures.Add(creature);
+                hand.TryRelease();
+            }
+        }
     }
 
     public void OnCollideStart(CollisionInstance col)

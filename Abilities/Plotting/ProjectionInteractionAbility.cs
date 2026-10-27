@@ -21,8 +21,8 @@ public class ProjectionInteractionAbility : Ability
 
     [ModOption]
     [ModOptionCategory("Plotting", 1)]
-    [ModOptionFloatValues(0.1f, 5f, 0.1f)]
-    public static float PlaybackDamageMultiplier = 1f;
+    [ModOptionFloatValues(0.1f, 10f, 0.1f)]
+    public static float PlaybackDamageMultiplier = 3f;
 
     /// <inheritdoc/>
     public ProjectionInteractionAbility(AbilitySpell spell) : base(spell) { }
