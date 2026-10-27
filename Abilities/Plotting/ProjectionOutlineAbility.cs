@@ -2,6 +2,8 @@
 using AliLib.Core.Abilities;
 using AliLib.Core.Assets;
 using AliLib.Core.GC;
+using System.Collections.Generic;
+using System.Linq;
 using ThunderRoad;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -85,13 +87,15 @@ public class ProjectionOutlineAbility : Ability
         CoroutineRunner.Instance.PlayAfterYield(() => SpawnOutline(Spell.spellCaster.ragdollHand.creature, currentFrame++ * (1f / ProjectionAbility.FramesPerSecond)), new WaitForEndOfFrame());
     }
 
-    /// <summary> Spawns a plotting outline for a creautre. </summary>
+    /// <summary> Spawns a plotting outline for a creature. </summary>
     public GameObject? SpawnOutline(Creature creature, float disposalDelay = 10f, Material? material = null)
     {
         if (OutlineShader == null)
             return null;
 
         GameObject outline = new GameObject("Outline");
+        var bakedMeshes = new List<SmartObject<Mesh>>();
+        var clonedItems = new List<Item>();
 
         material ??= new Material(OutlineShader); // This gets disposed by the SmartObject<Mesh>
         if (OutlineStyle == OutlineType.Outlined)
@@ -104,6 +108,7 @@ public class ProjectionOutlineAbility : Ability
         foreach(SkinnedMeshRenderer renderer in creature.GetComponentsInChildren<SkinnedMeshRenderer>())
         {
             SmartObject<Mesh> bakedMesh = new Mesh();
+            bakedMeshes.Add(bakedMesh);
 
             renderer.BakeMesh(bakedMesh, true);
 
@@ -123,21 +128,47 @@ public class ProjectionOutlineAbility : Ability
             mr.sharedMaterials = new Material[] { material };
 
             // When the Garbage Collector wants to dispose the mesh we politely ask it to delay disposal until we reach the relative frame
+            // This is stupid but im looking for an excuse to use AliGC
             bakedMesh.OnDisposed.AddFirst(() =>
             {
                 bakedMesh.OnDisposed.Cancelled = true;
 
                 CoroutineRunner.Instance.PlayAfterDelay(() =>
                 {
-                    bakedMesh.ForceDispose();
+                    foreach (Item clone in clonedItems)
+                        clone.Despawn();
 
-                    Object.Destroy(meshObject);
-                    Object.Destroy(material);
+                    clonedItems.Clear();
+
+                    foreach (var bakedMesh in bakedMeshes)
+                        bakedMesh.ForceDispose();
+
                     Object.Destroy(outline);
-
+                    Object.Destroy(material);
                 }, disposalDelay);
             });
         }
+
+        creature.ragdoll.ForBothHands((hand) =>
+        {
+            Item? original = hand.grabbedHandle?.item;
+            original?.data.SpawnAsync(clone =>
+            {
+                clonedItems.Add(clone);
+                clone.SetColliders(false, true);
+                clone.physicBody.isEnabled = false;
+                clone.transform.localScale = original.transform.localScale;
+
+                clone.renderers.ForEach(renderer =>
+                {
+                    renderer.material = material;
+                    renderer.shadowCastingMode = ShadowCastingMode.Off;
+                    renderer.receiveShadows = false;
+                });
+
+            }, original.transform.position, original.transform.rotation);
+
+        });
 
         return outline;
     }
